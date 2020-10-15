@@ -12,6 +12,10 @@ mesa = "*"
 jupyter = "*"
 numpy = "*"
 matplotlib = "*"
+keras-rl2 = "*"
+gym = "*"
+h5py = "*"
+pillow = "*"
 
 [requires]
 python_version = "3.8"
