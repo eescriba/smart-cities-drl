@@ -9,10 +9,7 @@ def agent_portrayal(agent):
     portrayal = {"Filled": "true"}
 
     if type(agent) is TaxiAgent:
-        # portrayal["Shape"] = "resources/taxi.png"
-        # portrayal["Shape"] = "https://icons.iconarchive.com/icons/icons-land/transporter/64/Taxi-Top-Yellow-icon.png"
-        portrayal["Shape"] = "rect"
-        portrayal["Color"] = "black"
+        portrayal["Shape"] = "resources/taxi.png"
         portrayal["Layer"] = 1
         portrayal["h"] = 0.75
         portrayal["w"] = 0.75
@@ -28,7 +25,9 @@ def agent_portrayal(agent):
         portrayal["Shape"] = "rect"
         portrayal["h"] = 1
         portrayal["w"] = 1
-        portrayal["Color"] = "green"
+        portrayal["Color"] = agent.color
+        portrayal["text"] = 'X'
+        portrayal["text_color"] = "black"
 
     return portrayal
 

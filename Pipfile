@@ -18,6 +18,7 @@ keras-rl2 = "*"
 gym = "*"
 h5py = "*"
 pillow = "*"
+seaborn = "*"
 
 [requires]
 python_version = "3.8"

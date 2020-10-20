@@ -26,9 +26,10 @@ class TaxiModel(Model):
         self.grid.place_agent(passenger, (x, y))
 
         locs_coords = [(0,0), (0,4), (3,0), (4,4)]
+        locs_colors = ['#e6c800', 'red', '#00afff', 'green']
 
         for i in range(0, 4):
-            loc= LocationAgent(i, self)
+            loc= LocationAgent(i, self, locs_colors[i])
             self.schedule.add(loc)
             self.grid.place_agent(loc, locs_coords[i])
         
