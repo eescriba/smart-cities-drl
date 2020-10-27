@@ -1,34 +1,33 @@
 
-from mesa import Agent
+from copy import deepcopy
+
+from mesa import Agent as MesaAgent
+from rl.agents.dqn import DQNAgent
 
 
-class TaxiAgent(Agent):
+class TaxiAgent(MesaAgent):
     """ An agent """
-    def __init__(self, unique_id, model):
-        super().__init__(unique_id, model)
+    # def __init__(self, unique_id, model, rl_agent):
+    #     self.rl_agent = rl_agent
+    #     super().__init__(unique_id, model)
         
-    def move(self):
-        possible_steps = self.model.grid.get_neighborhood(
-            self.pos,
-            moore=True,
-            include_center=False)
-        new_position = self.random.choice(possible_steps)
-        self.model.grid.move_agent(self, new_position)
 
-    def step(self):
-        self.move()
+    def step(self, dest):
+        self.model.grid.move_agent(self, dest)
 
 
-class PassengerAgent(Agent):
+class PassengerAgent(MesaAgent):
     """ An agent """
-    pass
+    def step(self, dest):
+        self.model.grid.move_agent(self, dest)
 
-class LocationAgent(Agent):
-    def __init__(self, unique_id, model, color):
+class LocationAgent(MesaAgent):
+    def __init__(self, unique_id, model, color, dest=False):
         self.color = color
+        self.dest = dest
         super().__init__(unique_id, model)
 
-class WallAgent(Agent):
+class WallAgent(MesaAgent):
     """ An agent """
     pass
 

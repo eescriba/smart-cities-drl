@@ -1,9 +1,9 @@
 from mesa.visualization.modules import CanvasGrid, ChartModule
 from mesa.visualization.ModularVisualization import ModularServer
 
-from taxi_ql.agents import TaxiAgent, PassengerAgent, LocationAgent
-from taxi_ql.model import TaxiModel
-
+from taxi_dqn.agents import TaxiAgent, PassengerAgent, LocationAgent
+from taxi_dqn.model import TaxiModel
+from taxi_dqn.dqn import dqn, env
 
 def agent_portrayal(agent):
     portrayal = {"Filled": "true"}
@@ -16,7 +16,7 @@ def agent_portrayal(agent):
        
     elif type(agent) is PassengerAgent:
         portrayal["Layer"] = 2
-        portrayal["Color"] = "grey"
+        portrayal["Color"] = "black"
         portrayal["Shape"] = "circle"
         portrayal["r"] = 0.5
 
@@ -26,8 +26,9 @@ def agent_portrayal(agent):
         portrayal["h"] = 1
         portrayal["w"] = 1
         portrayal["Color"] = agent.color
-        portrayal["text"] = 'X'
-        portrayal["text_color"] = "black"
+        if agent.dest:
+            portrayal["text"] = 'X'
+            portrayal["text_color"] = "black"
 
     return portrayal
 
@@ -35,7 +36,7 @@ def agent_portrayal(agent):
 grid = CanvasGrid(agent_portrayal, 5, 5, 500, 500)
 
 server = ModularServer(
-    TaxiModel, [grid], "Taxi Model", {"N": 100, "width": 5, "height": 5}
+    TaxiModel, [grid], "Taxi Model", {"N": 100, "width": 5, "height": 5, "rl_agent": dqn, "env": env}
 )
 
 server.port = 8521  # The default

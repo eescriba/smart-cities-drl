@@ -1,3 +1,3 @@
-from taxi_ql.server import server
+from taxi_dqn.server import server
 
 server.launch()
