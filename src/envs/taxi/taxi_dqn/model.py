@@ -7,14 +7,14 @@ from mesa.space import MultiGrid
 # from mesa.time import RandomActivation
 
 from taxi_dqn.agents import TaxiAgent, PassengerAgent, LocationAgent
-from taxi_dqn.scheduler import RLActivation
+from taxi_dqn.scheduler import TaxiActivation
 
 
 class TaxiModel(Model):
     """A model with some number of agents."""
     def __init__(self, N, width, height, rl_agent, env):
         self.grid = MultiGrid(width, height, True)
-        self.schedule = RLActivation(self, rl_agent)
+        self.schedule = TaxiActivation(self, rl_agent)
         self.running = True
 
         taxi = TaxiAgent(4, self)
