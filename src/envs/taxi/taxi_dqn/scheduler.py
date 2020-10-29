@@ -53,7 +53,7 @@ class TaxiActivation(RLActivation):
             if type(agent) is TaxiAgent:
                 agent.step((taxi_x, taxi_y))
             elif type(agent) is PassengerAgent:
-                coords = (taxi_x, taxi_y) if pass_index == 4 else self.model.locations[pass_index]
+                coords = (taxi_x, taxi_y) if pass_index == 4 else self.model.env.locs[pass_index]
                 agent.step(coords)
 
         self.steps += 1
