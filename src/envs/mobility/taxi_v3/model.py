@@ -1,15 +1,14 @@
 from mesa import Model
 
 from mesa.datacollection import DataCollector
-from mesa.space import MultiGrid
 
 # from mesa.time import RandomActivation
-from core.utils import transform_coords
 
 from .agents import TaxiAgent, PassengerAgent, LocationAgent, GridAgent
 from .env import MesaTaxiEnv
 from .rl_agents import dqn
 from .scheduler import TaxiActivation
+from .space import TaxiMultiGrid
 
 
 class TaxiModel(Model):
@@ -26,12 +25,12 @@ class TaxiModel(Model):
         if isinstance(rl_agent, str):
             rl_agent = self.rl_choices.get(rl_agent)
 
-        self.grid = MultiGrid(width, height, True)
+        self.grid = TaxiMultiGrid(width, height, True)
         self.schedule = TaxiActivation(self, rl_agent)
-        self.reward = 0
+
         self.done = False
         self.datacollector = DataCollector(
-            model_reporters={"Reward": self.reward},
+            model_reporters={"Reward": lambda m: m.schedule.reward},
         )
 
         taxi_coords = self.random.randrange(width), self.random.randrange(height)
@@ -77,12 +76,13 @@ class TaxiModel(Model):
                     continue
                 if j < len(row) - 1 and row[j + 1] == b"|":
                     agent = GridAgent(self.next_id(), self, wall=True)
-                    self.grid.place_agent(agent, transform_coords(i, j))
+                    self.grid.place_agent(agent, (i, int(j / 2)))
 
                 agent = GridAgent(self.next_id(), self)
-                self.grid.place_agent(agent, transform_coords(i, j))
+                self.grid.place_agent(agent, (i, int(j / 2)))
 
     def step(self):
         done = self.schedule.step()
         if done:
             self.running = False
+        self.datacollector.collect(self)

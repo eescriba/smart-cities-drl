@@ -3,7 +3,7 @@ from gym.envs.toy_text.taxi import TaxiEnv
 
 class MesaTaxiEnv(TaxiEnv):
     def __init__(self):
-        self.locs_colors = ["Y", "R", "B", "G"]
+        self.locs_colors = ["R", "G", "Y", "B"]
         super().__init__()
 
     @property

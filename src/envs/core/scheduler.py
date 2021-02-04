@@ -9,6 +9,7 @@ class RLActivation(BaseScheduler):
     def __init__(self, model, rl_agent) -> None:
         super().__init__(model)
         self.rl_agent = rl_agent
+        self.reward = 0
 
     def forward(self):
         """
@@ -18,7 +19,7 @@ class RLActivation(BaseScheduler):
         observation, reward, done, info = self.model.env.step(action)
         print(observation, reward, done, info)
         self.model.env.s = observation
-        self.model.reward = reward
+        self.reward += reward
         if done:
             self.rl_agent.forward(observation)
             self.rl_agent.backward(0.0, terminal=False)

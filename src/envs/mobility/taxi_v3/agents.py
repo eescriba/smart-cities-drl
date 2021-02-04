@@ -1,7 +1,5 @@
 from mesa import Agent as MesaAgent
 
-from core.utils import get_heading
-
 
 class TaxiAgent(MesaAgent):
     """ An agent """
@@ -20,7 +18,7 @@ class TaxiAgent(MesaAgent):
         }
 
     def step(self, dest):
-        self.heading = get_heading(self.heading, self.pos, dest)
+        self.heading = self.model.grid.get_heading(self.heading, self.pos, dest)
         self.model.grid.move_agent(self, dest)
 
 
