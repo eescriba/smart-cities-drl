@@ -1,2 +1,0 @@
-model_checkpoint_path: "cem_Taxi-v3_weights.h5f"
-all_model_checkpoint_paths: "cem_Taxi-v3_weights.h5f"
