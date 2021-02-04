@@ -1,6 +1,6 @@
 # Deep Reinforcement Learning with Keras-RL and Mesa
 
-![drl-keras-mesa](assets/mesa-taxi.png)
+![mesa-keras-rl](assets/mesa-taxi.png)
 
 ## Documentation
 
@@ -12,8 +12,8 @@ Mesa: https://mesa.readthedocs.io/en/stable/
 ## Installation
 
 ```
-git clone git@github.com:eescriba/drl-keras-mesa.git
-cd drl-keras-mesa
+git clone git@github.com:eescriba/mesa-keras-rl.git
+cd mesa-keras-rl
 pip install pipenv
 pipenv install
 ```
