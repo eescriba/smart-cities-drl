@@ -1,3 +1,3 @@
-from taxi_v3.server import server
+from taxinet.server import server
 
 server.launch()

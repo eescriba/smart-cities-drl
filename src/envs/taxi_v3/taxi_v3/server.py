@@ -35,21 +35,6 @@ model_params = {
         value="DQN",
         choices=["DQN"],
     ),
-    # "width": UserSettableParameter(
-    #     "slider", "Grid width", 5, 1, 20
-    # ),
-    # "height": UserSettableParameter(
-    #     "slider", "Grid height", 5, 1, 20
-    # ),
-    # "nb_locs": UserSettableParameter(
-    #     "slider", "Number of locations", 4, 1, 8
-    # ),
-    # "walls_rate": UserSettableParameter(
-    #     "slider", "Walls rate", 0.3, 0.1, 0.5, 0.1
-    # ),
-    # "nb_passengers": UserSettableParameter(
-    #     "slider", "Number of passengers", 1, 1, 1
-    # ),
 }
 
 server = ModularServer(
