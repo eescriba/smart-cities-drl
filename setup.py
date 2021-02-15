@@ -6,7 +6,7 @@ setup(
     description="Deep Reinforcement Learning with Keras-RL and Mesa",
     author="eescriba",
     url="https://github.com/eescriba/mesa-keras-rl",
-    package_dir={"": "src/envs/"},
+    package_dir={"": "src/"},
     packages=[""],
     install_requires=[
         "mesa",
