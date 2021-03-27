@@ -48,13 +48,13 @@ class TaxiNetEnv(MobilityEnv, DiscreteEnv):
     Rewards
     3 possible rewards:
     - Default per-step reward: -1
-    - Deliver passenger: +20
-    - Wrong pickup or drop off: -10
+    - Deliver passenger: +30
+    - Wrong pickup or drop off: -20
     - Illegal move: -50
 
     Observations
-    45000 discrete states:
-    - 625 vehicle locations
+    16200 discrete states:
+    - 225 vehicle locations
     - 8 target locations
     - 9 passenger locations
 
@@ -65,7 +65,7 @@ class TaxiNetEnv(MobilityEnv, DiscreteEnv):
 
     # State = namedtuple("State", "row col pass_idx dest_idx reward done")
 
-    def __init__(self, file_path="resources/city.txt"):
+    def __init__(self, file_path="resources/city15.txt"):
         MobilityEnv.__init__(self, file_path)
 
         self.actions = {
@@ -167,11 +167,11 @@ class TaxiNetEnv(MobilityEnv, DiscreteEnv):
         reward = -1
         done = False
         vehicle_loc = (state["row"], state["col"])
-        if (vehicle_loc == self.targets[state["dest_idx"]]) and state["pass_idx"] == 4:
+        if (vehicle_loc == self.targets[state["dest_idx"]]) and state["pass_idx"] == 8:
             state["pass_idx"] = state["dest_idx"]
             done = True
             reward = TaxiReward.ACTION_OK.value
-        elif (vehicle_loc in self.targets) and state["pass_idx"] == 4:
+        elif (vehicle_loc in self.targets) and state["pass_idx"] == 8:
             state["pass_idx"] = self.targets.index(vehicle_loc)
         else:  # dropoff at wrong location
             reward = TaxiReward.ACTION_ERROR.value

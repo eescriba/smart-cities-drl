@@ -14,7 +14,7 @@ class TaxiAction(Enum):
 class TaxiReward(Enum):
     DEFAULT = -1
     ACTION_OK = 30
-    ACTION_ERROR = -10
+    ACTION_ERROR = -20
     ILLEGAL_MOVE = -50
 
 
