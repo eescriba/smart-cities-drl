@@ -21,7 +21,7 @@ class MobilityModel(Model):
     rl_choices = {"DQN": dqn}
 
     def __init__(
-        self, rl_agent, env, nb_vehicles, nb_targets, show_symbols, width=25, height=25
+        self, rl_agent, env, nb_vehicles, nb_targets, show_symbols, width=15, height=15
     ):
 
         super().__init__()

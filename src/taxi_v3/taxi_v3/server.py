@@ -23,12 +23,12 @@ model_params = {
         value="Taxi-v3",
         choices=["Taxi-v3"],
     ),
-    "stage": UserSettableParameter(
-        "choice",
-        "Stage",
-        value="Test",
-        choices=["Test", "Train"],
-    ),
+    # "stage": UserSettableParameter(
+    #     "choice",
+    #     "Stage",
+    #     value="Test",
+    #     choices=["Test", "Train"],
+    # ),
     "rl_agent": UserSettableParameter(
         "choice",
         "RL Agent",

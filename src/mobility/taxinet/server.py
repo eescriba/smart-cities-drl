@@ -9,7 +9,7 @@ from .visualization import agent_portrayal
 CANVAS_HEIGHT = 500
 CANVAS_WIDTH = 500
 # grid_h, grid_w = env.shape
-grid_h, grid_w = 25, 25
+grid_h, grid_w = 15, 15
 
 grid = CanvasGrid(agent_portrayal, grid_w, grid_h, CANVAS_WIDTH, CANVAS_HEIGHT)
 chart = ChartModule(
