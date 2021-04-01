@@ -3,7 +3,7 @@ from core.scheduler import RLActivation
 from .agents import PassengerAgent, VehicleAgent
 
 
-class TaxiNetActivation(RLActivation):
+class SmartCabActivation(RLActivation):
     """
     A scheduler which activates each agent once per step, in random order.
     """
@@ -21,7 +21,7 @@ class TaxiNetActivation(RLActivation):
             elif isinstance(agent, PassengerAgent):
                 coords = (
                     (taxi_x, taxi_y)
-                    if pass_idx == 8
+                    if pass_idx == 4
                     else self.model.env.targets[pass_idx]
                 )
                 agent.step(coords)

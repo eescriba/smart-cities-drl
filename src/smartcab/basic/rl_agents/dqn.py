@@ -6,11 +6,9 @@ from rl.agents.dqn import DQNAgent
 from rl.policy import EpsGreedyQPolicy
 from rl.memory import SequentialMemory
 
-# from ..env import env
-
 # action_size = env.action_space.n
 action_size = 6
-state_size = 45000
+state_size = 720
 
 
 def build_model():
@@ -37,4 +35,13 @@ dqn = DQNAgent(
     policy=policy,
 )
 dqn.compile(Adam(lr=1e-3), metrics=["mae"])
-# dqn.load_weights("weights/dqn_Taxi-v3_weights.h5f")
+# dqn.fit(
+#     env,
+#     nb_steps=100000,
+#     visualize=False,
+#     verbose=1,
+#     nb_max_episode_steps=999,
+#     log_interval=10000,
+# )
+# dqn.save_weights("weights/dqn_city5_weights.h5f", overwrite=True)
+# dqn.load_weights("weights/dqn_basic_weights.h5f")

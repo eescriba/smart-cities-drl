@@ -8,30 +8,29 @@ from mesa.datacollection import DataCollector
 # from mesa.time import RandomActivation
 
 from .agents import GridAgent, PassengerAgent, TargetAgent, VehicleAgent
-from .env import TaxiNetEnv
+from .env import SmartCabEnv
 
-from .rl_agents import dqn
-from .scheduler import TaxiNetActivation
+
+from .scheduler import SmartCabActivation
 from .space import MobilityMultiGrid
 
 
 class MobilityModel(Model):
-
-    env_choices = {"TaxiNet": TaxiNetEnv, "WasteNet": TaxiNetEnv}
-    rl_choices = {"DQN": dqn}
-
     def __init__(
-        self, rl_agent, env, nb_vehicles, nb_targets, show_symbols, width=15, height=15
+        self,
+        rl_agent,
+        env,
+        nb_vehicles,
+        nb_targets,
+        nb_passengers,
+        show_symbols,
+        width=15,
+        height=15,
     ):
 
         super().__init__()
 
-        if isinstance(env, str):
-            env = self.env_choices.get(env)()
-        if isinstance(rl_agent, str):
-            rl_agent = self.rl_choices.get(rl_agent)
-
-        self.schedule = TaxiNetActivation(self, rl_agent)
+        self.schedule = SmartCabActivation(self, rl_agent)
         self.grid = MobilityMultiGrid(width, height, True)
         self.show_symbols = show_symbols
         self._init_environment(env, nb_targets)

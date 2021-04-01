@@ -35,7 +35,7 @@ class MobilityEnv:
         return self.height, self.width
 
 
-class TaxiNetEnv(MobilityEnv, DiscreteEnv):
+class SmartCabEnv(MobilityEnv, DiscreteEnv):
     """
     Actions
     6 discrete deterministic actions:
