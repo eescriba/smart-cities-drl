@@ -10,6 +10,7 @@ class MobilityEnv:
     def __init__(self, file_path):
         with open(file_path, "r") as f:
             self.grid = [[e for e in line[:-1].split(" ")] for line in f]
+
         f.close()
         self.targets = []
         self.cells = []
@@ -46,7 +47,7 @@ class TaxiNetEnv(MobilityEnv, DiscreteEnv):
     - 5: drop off passenger
 
     Rewards
-    3 possible rewards:
+    4 possible rewards:
     - Default per-step reward: -1
     - Deliver passenger: +30
     - Wrong pickup or drop off: -20
@@ -65,7 +66,7 @@ class TaxiNetEnv(MobilityEnv, DiscreteEnv):
 
     # State = namedtuple("State", "row col pass_idx dest_idx reward done")
 
-    def __init__(self, file_path="resources/city15.txt"):
+    def __init__(self, file_path="resources/city5.txt"):
         MobilityEnv.__init__(self, file_path)
 
         self.actions = {
@@ -81,6 +82,11 @@ class TaxiNetEnv(MobilityEnv, DiscreteEnv):
         nb_targets = len(self.targets)
         nb_states = self.height * self.width * nb_targets * (nb_targets + 1)
 
+        print("Actions: ", nb_actions)
+        print("Targets: ", nb_targets)
+        print("States: ", nb_states)
+
+        self.aboard_idx = nb_targets
         self.max_row = self.height - 1
         self.max_col = self.width - 1
         self.dims = (self.height, self.width, nb_targets + 1, nb_targets)
@@ -126,53 +132,55 @@ class TaxiNetEnv(MobilityEnv, DiscreteEnv):
         state, reward, done = self.actions[action](state)
         return self.encode(list(state.values())), reward, done
 
-    def move_south(self, state):
+    def default_state(self, state):
         reward = TaxiReward.DEFAULT.value
         done = False
-        state["row"] = min(state["row"] + 1, self.max_row)
-        return state, reward, done
+        new_state = dict(state)
+        return new_state, reward, done
+
+    def move_south(self, state):
+        new_state, reward, done = self.default_state(state)
+        new_state["row"] = min(state["row"] + 1, self.max_row)
+        return new_state, reward, done
 
     def move_north(self, state):
-        reward = TaxiReward.DEFAULT.value
-        done = False
-        state["row"] = max(state["row"] - 1, 0)
-        return state, reward, done
+        new_state, reward, done = self.default_state(state)
+        new_state["row"] = max(state["row"] - 1, 0)
+        return new_state, reward, done
 
     def move_east(self, state):
-        reward = TaxiReward.DEFAULT.value
-        done = False
-        state["col"] = min(state["col"] + 1, self.max_col)
+        new_state, reward, done = self.default_state(state)
+        new_state["col"] = min(state["col"] + 1, self.max_col)
         return state, reward, done
 
     def move_west(self, state):
-        reward = TaxiReward.DEFAULT.value
-        done = False
-        state["col"] = max(state["col"] - 1, 0)
-        return state, reward, done
+        new_state, reward, done = self.default_state(state)
+        new_state["col"] = max(state["col"] - 1, 0)
+        return new_state, reward, done
 
     def pickup(self, state):
-        reward = TaxiReward.DEFAULT.value
-        done = False
+        new_state, reward, done = self.default_state(state)
         vehicle_loc = (state["row"], state["col"])
         if (
-            state["pass_idx"] < len(self.targets)
+            state["pass_idx"] < self.aboard_idx
             and vehicle_loc == self.targets[state["pass_idx"]]
         ):
-            state["pass_idx"] = len(self.targets)
+            new_state["pass_idx"] = self.aboard_idx
         else:  # passenger not at location
             reward = TaxiReward.ACTION_ERROR.value
-        return state, reward, done
+        return new_state, reward, done
 
     def dropoff(self, state):
-        reward = -1
-        done = False
+        new_state, reward, done = self.default_state(state)
         vehicle_loc = (state["row"], state["col"])
-        if (vehicle_loc == self.targets[state["dest_idx"]]) and state["pass_idx"] == 8:
-            state["pass_idx"] = state["dest_idx"]
+        if (vehicle_loc == self.targets[state["dest_idx"]]) and state[
+            "pass_idx"
+        ] == self.aboard_idx:
+            new_state["pass_idx"] = state["dest_idx"]
             done = True
             reward = TaxiReward.ACTION_OK.value
-        elif (vehicle_loc in self.targets) and state["pass_idx"] == 8:
-            state["pass_idx"] = self.targets.index(vehicle_loc)
+        elif (vehicle_loc in self.targets) and state["pass_idx"] == self.aboard_idx:
+            new_state["pass_idx"] = self.targets.index(vehicle_loc)
         else:  # dropoff at wrong location
             reward = TaxiReward.ACTION_ERROR.value
-        return state, reward, done
+        return new_state, reward, done
