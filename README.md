@@ -1,6 +1,6 @@
-# Deep Reinforcement Learning with Keras-RL and Mesa
+# Deep Reinforcement Learning for Smart Mobility
 
-![mesa-keras-rl](assets/mesa-taxi.png)
+![smart-cities-drl](assets/mesa-taxi.png)
 
 ## Documentation
 
@@ -12,8 +12,8 @@ Mesa: https://mesa.readthedocs.io/en/stable/
 ## Installation
 
 ```
-git clone git@github.com:eescriba/mesa-keras-rl.git
-cd mesa-keras-rl
+git clone git@github.com:eescriba/smart-cities-drl.git
+cd smart-cities-drl
 pip install pipenv
 pipenv install
 ```
@@ -21,5 +21,5 @@ pipenv install
 ## Running
 
 ```
-mesa runserver [env_run_path]
+mesa runserver src/smartcab/[env]
 ```
