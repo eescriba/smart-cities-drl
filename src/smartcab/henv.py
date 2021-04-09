@@ -204,7 +204,7 @@ class HierarchicalSmartCabEnv(MultiAgentEnv):
         if new_pos == cur_pos:
             rew = {self.low_level_agent_id: -1}
         else:
-            rew = {self.low_level_agent_id: 1}
+            rew = {self.low_level_agent_id: 0}
         
         # Handle env termination & transitions back to higher level
         done = {"__all__": False}
