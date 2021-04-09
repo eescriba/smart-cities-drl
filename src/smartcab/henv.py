@@ -55,7 +55,8 @@ class SmartCabEnv(gym.Env):
         self.action_space = Discrete(nb_actions) 
         self.observation_space = Discrete(nb_states)
         self.dims = (5, 5, 5, 4)
-        self.s = self.encode([3, 3, 0, 3])
+        self.state = (3, 3, 0, 3)
+        self.s = self.encode(list(self.state))
         self.max_row = self.y_dim - 1
         self.max_col = self.x_dim - 1
 
@@ -65,60 +66,61 @@ class SmartCabEnv(gym.Env):
         self.row = 2
         self.col = 2
         self.num_steps = 0
-        self.s = self.encode([3, 3, 0, 3])
+        self.state = (3, 3, 0, 3)
+        self.s = self.encode(list(self.state))
         return self.s
 
     def step(self, action):
-        state, reward, done = self.actions[action](self.s)
+        state, reward, done = self.actions[action](self.state)
+        self.state = state
         self.s = self.encode(list(state.values()))
         return self.s, reward, done, {}
-
 
     def encode(self, state: list) -> TaxiAction:
         return np.ravel_multi_index(state, self.dims)
     
-    def decode(self, i: int) -> list:
-        return np.unravel_index(i, self.dims)
+    def decode(self, s: int) -> list:
+        return np.unravel_index(s, self.dims)
 
-    def default_state(self, state):
+    def default_state(self, state: dict):
         reward = TaxiReward.DEFAULT.value
         done = False
         new_state = dict(state)
         return new_state, reward, done
 
-    def move_south(self, state):
+    def move_south(self, state: dict):
         new_state, reward, done = self.default_state(state)
         new_state["row"] = min(state["row"] + 1, self.max_row)
         return new_state, reward, done
 
-    def move_north(self, state):
+    def move_north(self, state: dict):
         new_state, reward, done = self.default_state(state)
         new_state["row"] = max(state["row"] - 1, 0)
         return new_state, reward, done
 
-    def move_east(self, state):
+    def move_east(self, state: dict):
         new_state, reward, done = self.default_state(state)
         new_state["col"] = min(state["col"] + 1, self.max_col)
         return state, reward, done
 
-    def move_west(self, state):
+    def move_west(self, state: dict):
         new_state, reward, done = self.default_state(state)
         new_state["col"] = max(state["col"] - 1, 0)
         return new_state, reward, done
 
-    def pickup(self, state):
+    def pickup(self, state: dict):
         new_state, reward, done = self.default_state(state)
         vehicle_loc = (state["row"], state["col"])
         if (
             state["pass_idx"] < self.aboard_idx
             and vehicle_loc == self.targets[state["pass_idx"]]
         ):
-            new_state["pass_idx"] = self.aboard_idx
+            state["pass_idx"] = self.aboard_idx
         else:  # passenger not at location
             reward = TaxiReward.ACTION_ERROR.value
         return new_state, reward, done
 
-    def dropoff(self, state):
+    def dropoff(self, state: dict):
         new_state, reward, done = self.default_state(state)
         vehicle_loc = (state["row"], state["col"])
         if (vehicle_loc == self.targets[state["dest_idx"]]) and state[
