@@ -139,7 +139,7 @@ class SmartCabEnv(gym.Env):
 
 
 class HierarchicalSmartCabEnv(MultiAgentEnv):
-    def __init__(self):
+    def __init__(self, env_config):
         self.flat_env = SmartCabEnv()
 
     def reset(self):
