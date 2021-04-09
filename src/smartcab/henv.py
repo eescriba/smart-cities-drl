@@ -55,7 +55,7 @@ class SmartCabEnv(gym.Env):
         self.action_space = Discrete(nb_actions) 
         self.observation_space = Discrete(nb_states)
         self.dims = (5, 5, 5, 4)
-        self.state = (3, 3, 0, 3)
+        self.state = dict(row=2, col=2, pass_idx=0, dest_idx=3)
         self.s = self.encode(list(self.state))
         self.max_row = self.y_dim - 1
         self.max_col = self.x_dim - 1
@@ -66,7 +66,7 @@ class SmartCabEnv(gym.Env):
         self.row = 2
         self.col = 2
         self.num_steps = 0
-        self.state = (3, 3, 0, 3)
+        self.state = dict(row=2, col=2, pass_idx=0, dest_idx=3)
         self.s = self.encode(list(self.state))
         return self.s
 
