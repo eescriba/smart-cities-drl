@@ -53,42 +53,57 @@ class SmartCabEnv(gym.Env):
 
         self.aboard_idx = nb_targets
         self.action_space = Discrete(nb_actions) 
-        self.observation_space = Discrete(nb_states)
+        # self.observation_space = Discrete(nb_states)
+        self.observation_space = Tuple([
+            Box(0, 4, shape=(2, )),  # veh position (x, y)
+            Discrete(5),  # pass index
+            Discrete(4),  # dest index
+        ])
         self.dims = (5, 5, 5, 4)
         self.state = dict(row=2, col=2, pass_idx=0, dest_idx=3)
-        self.s = self.encode(self.state)
+        # self.s = self.encode(self.state)
         self.max_row = self.height - 1
         self.max_col = self.width - 1
 
     def reset(self):
         self.pass_idx = 0
         self.dest_idx = 3
-        self.row = 2
-        self.col = 2
+        self.pos = (2, 2)
         self.num_steps = 0
         self.state = dict(row=2, col=2, pass_idx=0, dest_idx=3)
-        self.s = self.encode(self.state)
-        return self.s
+        # self.s = self.encode(self.state)
+        self.s = self.from_dict(self.state)
+        # return self.s
+        return [[self.pos[0], self.pos[1]], self.pass_idx, self.dest_idx]
 
     def step(self, action):
+        self.num_steps += 1
         state, reward, done = self.actions[action](self.state)
+        done = done or self.num_steps > 200
         self.state = state
-        self.s = self.encode(state)
+        # self.s = self.encode(state)
+        self.s = self.from_dict(self.state)
         return self.s, reward, done, {}
 
-    def encode(self, state: dict) -> TaxiAction:
-        return np.ravel_multi_index(list(state.values()), self.dims)
+    # def encode(self, state: dict) -> TaxiAction:
+    #     return np.ravel_multi_index(list(state.values()), self.dims)
     
-    def decode(self, s: int) -> list:
-        return np.unravel_index(s, self.dims)
+    # def decode(self, s: int) -> list:
+    #     return np.unravel_index(s, self.dims)
 
-    def default_state(self, state: dict):
+    def to_dict(self, state: list) -> dict:
+        return dict(row=state[0][0], col=state[0][1], pass_idx=state[1], dest_idx=state[2])
+
+    def from_dict(self, state: dict) -> list:
+        return [[state["row"], state["col"]], state["pass_idx"], state["dest_idx"]]
+
+    def default_state(self, state: list):
         reward = TaxiReward.DEFAULT.value
         done = False
-        new_state = dict(state)
+        new_state = self.to_dict(state)
         return new_state, reward, done
 
-    def move_south(self, state: dict):
+    def move_south(self, state: list):
         new_state, reward, done = self.default_state(state)
         new_state["row"] = min(state["row"] + 1, self.max_row)
         return new_state, reward, done
