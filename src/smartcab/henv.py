@@ -23,7 +23,7 @@ X o o X o"""
 # (vehicle_x, vehicle_y, passenger_loc, target)
 
 class SmartCabEnv(gym.Env):
-    def __init__(self):
+    def __init__(self, env_config):
         self.grid = [[e for e in line.split(" ")] for line in MAP_DATA.split("\n") if line]
         self.height = len(self.grid)
         self.width = len(self.grid[0])
@@ -155,7 +155,7 @@ class SmartCabEnv(gym.Env):
 
 class HierarchicalSmartCabEnv(MultiAgentEnv):
     def __init__(self, env_config):
-        self.flat_env = SmartCabEnv()
+        self.flat_env = SmartCabEnv(env_config)
 
     def reset(self):
         self.cur_obs = self.flat_env.reset()
