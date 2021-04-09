@@ -97,13 +97,13 @@ class SmartCabEnv(gym.Env):
     def from_dict(self, state: dict) -> list:
         return [[state["row"], state["col"]], state["pass_idx"], state["dest_idx"]]
 
-    def default_state(self, state: list):
+    def default_state(self, state: dict):
         reward = TaxiReward.DEFAULT.value
         done = False
-        new_state = self.to_dict(state)
+        new_state = dict(state)
         return new_state, reward, done
 
-    def move_south(self, state: list):
+    def move_south(self, state: dict):
         new_state, reward, done = self.default_state(state)
         new_state["row"] = min(state["row"] + 1, self.max_row)
         return new_state, reward, done
