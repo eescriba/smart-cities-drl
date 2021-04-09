@@ -79,7 +79,7 @@ class SmartCabEnv(gym.Env):
     def step(self, action):
         self.num_steps += 1
         state, reward, done = self.actions[action](self.state)
-        done = done or self.num_steps > 200
+        # done = done or self.num_steps > 200
         self.state = state
         # self.s = self.encode(state)
         self.s = self.from_dict(self.state)
