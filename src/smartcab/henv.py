@@ -24,16 +24,16 @@ X o o X o"""
 
 class SmartCabEnv(gym.Env):
     def __init__(self, env_config):
-        self.map = [m for m in MAP_DATA.split("\n") if m]
-        self.x_dim = len(self.map)
-        self.y_dim = len(self.map[0])
-       
-        logger.info("Loaded map {} {}".format(self.x_dim, self.y_dim))
+        self.grid = [[e for e in line.split(" ")] for line in MAP_DATA.split("\n") if line]
+        self.height = len(self.grid)
+        self.width = len(self.grid[0])
+        logger.info("Loaded map {} {}".format(self.height, self.width))
         self.targets = []
-        for x in range(self.x_dim):
-            for y in range(self.y_dim):
-                if self.map[x][y] == "X":
-                    self.targets.append((x,y))
+        for i, row in enumerate(self.grid):
+            for j, cell in enumerate(row):
+                coords = (i, j)
+                if cell == "X":
+                    self.targets.append(coords)
 
         self.actions = {
             0: self.move_south,
@@ -45,7 +45,7 @@ class SmartCabEnv(gym.Env):
         }
         nb_actions = len(self.actions)
         nb_targets = len(self.targets)
-        nb_states = self.x_dim * self.y_dim * nb_targets * (nb_targets + 1)
+        nb_states = self.height * self.width * nb_targets * (nb_targets + 1)
 
         print("Actions: ", nb_actions)
         print("Targets: ", nb_targets)
@@ -57,8 +57,8 @@ class SmartCabEnv(gym.Env):
         self.dims = (5, 5, 5, 4)
         self.state = dict(row=2, col=2, pass_idx=0, dest_idx=3)
         self.s = self.encode(self.state)
-        self.max_row = self.y_dim - 1
-        self.max_col = self.x_dim - 1
+        self.max_row = self.height - 1
+        self.max_col = self.width - 1
 
     def reset(self):
         self.pass_idx = 0
