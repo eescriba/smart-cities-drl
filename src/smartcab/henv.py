@@ -201,10 +201,7 @@ class HierarchicalSmartCabEnv(MultiAgentEnv):
 
         # Calculate low-level agent observation and reward
         obs = {self.low_level_agent_id: [f_obs, self.current_goal]}
-        if new_pos == cur_pos:
-            rew = {self.low_level_agent_id: -1}
-        else:
-            rew = {self.low_level_agent_id: 0}
+        rew = {self.low_level_agent_id: f_rew}
         
         # Handle env termination & transitions back to higher level
         done = {"__all__": False}
