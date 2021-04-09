@@ -56,7 +56,7 @@ class SmartCabEnv(gym.Env):
         self.observation_space = Discrete(nb_states)
         self.dims = (5, 5, 5, 4)
         self.state = dict(row=2, col=2, pass_idx=0, dest_idx=3)
-        self.s = self.encode(list(self.state))
+        self.s = self.encode(self.state)
         self.max_row = self.y_dim - 1
         self.max_col = self.x_dim - 1
 
@@ -67,17 +67,17 @@ class SmartCabEnv(gym.Env):
         self.col = 2
         self.num_steps = 0
         self.state = dict(row=2, col=2, pass_idx=0, dest_idx=3)
-        self.s = self.encode(list(self.state))
+        self.s = self.encode(self.state)
         return self.s
 
     def step(self, action):
         state, reward, done = self.actions[action](self.state)
         self.state = state
-        self.s = self.encode(list(state.values()))
+        self.s = self.encode(state)
         return self.s, reward, done, {}
 
-    def encode(self, state: list) -> TaxiAction:
-        return np.ravel_multi_index(state, self.dims)
+    def encode(self, state: dict) -> TaxiAction:
+        return np.ravel_multi_index(list(state.values()), self.dims)
     
     def decode(self, s: int) -> list:
         return np.unravel_index(s, self.dims)
