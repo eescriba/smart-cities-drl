@@ -46,7 +46,7 @@ class WasteNetEnv(gym.Env):
 
         self.nb_dumpsters = 6
         self.nb_nodes = self.nb_dumpsters + 1
-        self.action_space = Discrete(3)
+        self.action_space = spaces.Discrete(3)
         self.observation_space = spaces.Tuple(
             [
                 spaces.Discrete(self.nb_nodes),
