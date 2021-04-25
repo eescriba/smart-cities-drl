@@ -19,6 +19,7 @@ gym = "*"
 h5py = "*"
 pillow = "*"
 seaborn = "*"
+ray = {extras = ["rllib"], version = "*"}
 
 [requires]
 python_version = "3.8"
