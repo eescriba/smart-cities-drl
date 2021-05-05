@@ -11,13 +11,10 @@ class WasteNetEnv(gym.Env):
     Source:
 
     Observation:
-        Type: Tuple(Box, Discrete)
-            Type: Box(N)
-            Num     Observation     Min     Max
-            0-N     Fill level      0.0     1.0
-            Type: Discrete(N)
-            Num     Observation
-            0-N     Current node
+        Type: Tuple(Discrete(N), Box(N))
+        Num     Observation     Min     Max
+        0-(N+1) Current node
+        0-N     Fill level      0.0     1.0
 
     Actions:
         Type: Discrete(3)
@@ -40,14 +37,14 @@ class WasteNetEnv(gym.Env):
 
     Episode Termination:
         Current node: N
-        Current day: 7
+        Current day: 6
 
     """
 
-    def __init__(self):
+    def __init__(self, env_config):
 
-        self.nb_dumpsters = 6
-        self.nb_nodes = self.nb_dumpsters + 1
+        self.nb_nodes = 7
+        self.nb_dumpsters = self.nb_nodes - 1
         self.action_space = spaces.Discrete(3)
         self.observation_space = spaces.Tuple(
             [
@@ -59,38 +56,42 @@ class WasteNetEnv(gym.Env):
                 ),
             ]
         )
-        self.current_node = 0
-        self.current_day= 0
-        self.fill_levels = [0.5, 0.2, 0.3, 0.1, 0.6, 0.2]
         self.seed()
+        self.s = self.reset()
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
+    def reset(self):
+        self.current_node = 0
+        self.current_day = 0
+        self.fill_levels = [0.5, 0.2, 0.3, 0.1, 0.6, 0.2]
+        return [self.current_node, self.fill_levels]
+
     def step(self, action):
         reward = -3
         done = False
+
         self.current_node = (self.current_node + 1) % self.nb_nodes
-        self.current_day = (self.current_day + 1) % 7
 
-        if action == 0:
-            self.fill_levels[self.N] += 0.4
-        else:
-            self.fill_levels[self.N] = 0.4
-            reward -= 2
-
-        if self.current_node == self.nb_dumpsters:
-            reward+=20
+        if self.current_node == 0:  # base
+            reward += 25
+            self.current_day = (self.current_day + 1) % 7
             if self.current_day == 6:
                 done = True
-        
-        if self.fill_levels[self.current_node] > 1.0:
-            reward-=20
+        else:
+            dumpster_idx = self.current_node - 1
+            if action == 0:
+                self.fill_levels[dumpster_idx] = min(
+                    1.0, self.fill_levels[dumpster_idx] + 0.3
+                )
+            else:
+                self.fill_levels[dumpster_idx] = 0.3
+                reward -= 2
 
-        return [self.fill_levels, self.current_node], reward, done, {}
+            if self.fill_levels[dumpster_idx] == 1.0:
+                reward -= 20
 
-    def reset(self):
-        self.current_node = 0
-        self.fill_levels = [0.5, 0.2, 0.3, 0.1, 0.6, 0.2]
-
+        self.s = [self.current_node, self.fill_levels]
+        return self.s, reward, done, {}
