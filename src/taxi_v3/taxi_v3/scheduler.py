@@ -1,8 +1,8 @@
-from core.scheduler import RLActivation
+from core.scheduler import RLKerasActivation
 from .agents import TaxiAgent, PassengerAgent
 
 
-class TaxiActivation(RLActivation):
+class TaxiActivation(RLKerasActivation):
     """
     A scheduler which activates each agent once per step, in random order.
     """

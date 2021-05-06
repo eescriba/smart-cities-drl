@@ -8,16 +8,14 @@ SYMBOLS_MAP = {
     "▷": "white",
     "◁": "white",
     "X": "white",
-    "+": "#fde293",
+    "+": "#9CCC65",
 }
 
 TARGET_COLORS = [
     "#EF5350",
     "#AB47BC",
-    "#5C6BC0",
     "#42A5F5",
     "#26A69A",
-    "#9CCC65",
     "#FFEE58",
     "#FFA726",
 ]

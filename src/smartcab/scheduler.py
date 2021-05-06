@@ -1,9 +1,9 @@
-from core.scheduler import RLActivation
+from core.scheduler import RLlibActivation
 
 from .agents import PassengerAgent, VehicleAgent
 
 
-class SmartCabActivation(RLActivation):
+class SmartCabActivation(RLlibActivation):
     """
     A scheduler which activates each agent once per step, in random order.
     """
@@ -13,17 +13,18 @@ class SmartCabActivation(RLActivation):
         Executes the step of all agents, one at a time, in random order.
         """
 
-        done = self.forward()
-        taxi_x, taxi_y, pass_idx, dest_idx = self.model.state
+        action, done = self.forward()
+        print("Action:", action)
+
+        vehicle_loc = self.model.env.vehicle_loc
+        targets = self.model.env.targets
+        pass_idx = self.model.env.state["pass_idx"]
+
         for agent in self.agent_buffer(shuffled=True):
             if isinstance(agent, VehicleAgent):
-                agent.step((taxi_x, taxi_y))
+                agent.step(vehicle_loc)
             elif isinstance(agent, PassengerAgent):
-                coords = (
-                    (taxi_x, taxi_y)
-                    if pass_idx == 4
-                    else self.model.env.targets[pass_idx]
-                )
+                coords = vehicle_loc if pass_idx == len(targets) else targets[pass_idx]
                 agent.step(coords)
 
         self.steps += 1
