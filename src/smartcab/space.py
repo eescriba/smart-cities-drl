@@ -1,7 +1,7 @@
 from mesa.space import MultiGrid
 
 
-class MobilityMultiGrid(MultiGrid):
+class SmartCabMultiGrid(MultiGrid):
     """ MultiGrid with transformed coordinates"""
 
     def move_agent(self, agent, pos):

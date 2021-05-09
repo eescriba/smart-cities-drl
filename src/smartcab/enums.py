@@ -2,7 +2,7 @@ import numpy as np
 from enum import Enum
 
 
-class TaxiAction(Enum):
+class SmartCabAction(Enum):
     SOUTH = 0
     NORTH = 1
     EAST = 2
@@ -11,7 +11,7 @@ class TaxiAction(Enum):
     DROPOFF = 5
 
 
-class TaxiReward(Enum):
+class SmartCabReward(Enum):
     DEFAULT = -1
     ACTION_OK = 30
     ACTION_ERROR = -20
@@ -28,10 +28,14 @@ class GridSymbol(Enum):
     TARGET = "X"
     STATION = "+"
 
-    @property
-    def directions(self):
-        return [self.DOWN, self.UP, self.RIGHT, self.LEFT, self.CROSS]
+    @classmethod
+    def valid_defaults(cls):
+        return [cls.CROSS.value, cls.TARGET.value, cls.STATION.value]
+
+    @classmethod
+    def directions(cls):
+        return [cls.DOWN, cls.UP, cls.RIGHT, cls.LEFT, cls.CROSS]
 
     @property
     def is_direction(self):
-        return self in self.directions
+        return self in GridSymbol.directions()

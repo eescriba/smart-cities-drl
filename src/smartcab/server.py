@@ -2,7 +2,7 @@ from mesa.visualization.modules import CanvasGrid, ChartModule
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.UserParam import UserSettableParameter
 
-from .model import MobilityModel
+from .model import SmartCabModel
 from .visualization import agent_portrayal
 
 # from .rl_agents import dqn
@@ -33,5 +33,5 @@ model_params = {
 }
 
 server = ModularServer(
-    MobilityModel, [grid], "Mobility Model DRL", model_params=model_params
+    SmartCabModel, [grid], "SmartCab Model", model_params=model_params
 )

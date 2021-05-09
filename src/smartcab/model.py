@@ -11,10 +11,10 @@ from ray.rllib.agents.dqn import DQNTrainer, DEFAULT_CONFIG
 from .agents import GridAgent, PassengerAgent, TargetAgent, VehicleAgent
 from .env import SmartCabEnv
 from .scheduler import SmartCabActivation
-from .space import MobilityMultiGrid
+from .space import SmartCabMultiGrid
 
 
-class MobilityModel(Model):
+class SmartCabModel(Model):
     def __init__(
         self,
         rl_agent,
@@ -29,7 +29,7 @@ class MobilityModel(Model):
         super().__init__()
 
         self.schedule = SmartCabActivation(self, rl_agent)
-        self.grid = MobilityMultiGrid(width, height, True)
+        self.grid = SmartCabMultiGrid(width, height, True)
         self.show_symbols = show_symbols
 
         env_config = {}
