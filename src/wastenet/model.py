@@ -30,7 +30,7 @@ class WasteNet(Model):
         self.env = WasteNetEnv(env_config)
 
         # RL Agent
-        if mode == WasteNetMode.PPO.value:
+        if mode == WasteNetMode.PPO.name:
             ray.init(ignore_reinit_error=True)
             rl_agent = PPOTrainer(DEFAULT_CONFIG.copy(), env=WasteNetEnv)
             # rl_agent.restore("./checkpoints/checkpoint-143")

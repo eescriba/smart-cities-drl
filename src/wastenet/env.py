@@ -54,7 +54,7 @@ class WasteNetEnv(gym.Env):
         self.start_node = 0
         self.end_node = self.nb_nodes - 1
         self.fill_ranges = env_config.get("fill_ranges", generate_fill_ranges())
-        self.total_days = env_config.get("nb_days", 15)
+        self.total_days = env_config.get("nb_days", 30)
 
         self.action_space = spaces.Discrete(2)
         self.observation_space = spaces.Tuple(
@@ -98,7 +98,6 @@ class WasteNetEnv(gym.Env):
         else:
             dumpster_idx = self.current_node - 1
             fill = random.randrange(*self.fill_ranges[dumpster_idx])
-            print("FILL ", fill)
             if action == Action.PICKUP:
                 dist = self._update_path()
                 reward += Reward.PICKUP
