@@ -10,6 +10,7 @@ import ray
 from ray.rllib.agents.ppo import PPOTrainer, DEFAULT_CONFIG
 
 from .agents import DumpsterAgent, BaseAgent
+from .enums import WasteNetMode
 from .env import WasteNetEnv
 from .utils import generate_graph
 from .scheduler import WasteNetActivation
@@ -29,9 +30,12 @@ class WasteNet(Model):
         self.env = WasteNetEnv(env_config)
 
         # RL Agent
-        ray.init(ignore_reinit_error=True)
-        rl_agent = PPOTrainer(DEFAULT_CONFIG.copy(), env=WasteNetEnv)
-        # ppo.restore("./checkpoints/checkpoint-143")
+        if mode == WasteNetMode.PPO.value:
+            ray.init(ignore_reinit_error=True)
+            rl_agent = PPOTrainer(DEFAULT_CONFIG.copy(), env=WasteNetEnv)
+            # rl_agent.restore("./checkpoints/checkpoint-143")
+        else:
+            rl_agent = None
 
         # Scheduler
         self.schedule = WasteNetActivation(self, mode, rl_agent)
@@ -66,16 +70,16 @@ class WasteNet(Model):
 
 
 def nb_empty(model):
-    return sum(map(lambda l: l <= 0.2, model.env.fill_levels))
+    return sum(map(lambda l: l <= 20, model.env.fill_levels))
 
 
 def nb_medium(model):
-    return sum(map(lambda l: l > 0.2 and l < 0.8, model.env.fill_levels))
+    return sum(map(lambda l: l > 20 and l < 80, model.env.fill_levels))
 
 
 def nb_full(model):
-    return sum(map(lambda l: l >= 0.8 and l < 1.0, model.env.fill_levels))
+    return sum(map(lambda l: l >= 80 and l < 100, model.env.fill_levels))
 
 
 def nb_overflow(model):
-    return sum(map(lambda l: l == 1.0, model.env.fill_levels))
+    return sum(map(lambda l: l == 100, model.env.fill_levels))

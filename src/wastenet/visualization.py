@@ -5,11 +5,11 @@ def network_portrayal(G):
     def node_color(agent):
         if not hasattr(agent, "fill_level"):
             return "black"
-        if agent.fill_level >= 1.0:
+        if agent.fill_level >= 100:
             return "red"
-        elif agent.fill_level >= 0.8:
+        elif agent.fill_level >= 80:
             return "orange"
-        elif agent.fill_level > 0.2:
+        elif agent.fill_level > 20:
             return "#ffe900"
         return "#008000"
 
@@ -34,7 +34,7 @@ def network_portrayal(G):
 
     def get_tooltip(agent):
         return (
-            "id: {}<br>fill_level: {}".format(agent.unique_id, agent.fill_level)
+            "id: {}<br>fill_level: {}%".format(agent.unique_id, agent.fill_level)
             if hasattr(agent, "fill_level")
             else "Base"
         )

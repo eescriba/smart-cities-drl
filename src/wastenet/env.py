@@ -61,9 +61,9 @@ class WasteNetEnv(gym.Env):
             [
                 spaces.Discrete(self.nb_nodes),
                 spaces.Box(
-                    np.array([np.float32(0.0) for _ in range(self.nb_dumpsters)]),
-                    np.array([np.float32(1.0) for _ in range(self.nb_dumpsters)]),
-                    dtype=np.float32,
+                    np.array([0 for _ in range(self.nb_dumpsters)]),
+                    np.array([100 for _ in range(self.nb_dumpsters)]),
+                    dtype=np.uint8,
                 ),
             ]
         )
@@ -78,7 +78,7 @@ class WasteNetEnv(gym.Env):
         self.current_node = self.start_node
         self.current_day = 0
         self.current_path = [self.start_node]
-        self.fill_levels = [random.randrange(*fr) / 10 for fr in self.fill_ranges]
+        self.fill_levels = [random.randrange(*fr) for fr in self.fill_ranges]
         return [self.current_node, self.fill_levels]
 
     def step(self, action):
@@ -97,7 +97,8 @@ class WasteNetEnv(gym.Env):
             reward += Reward.MOVE * dist
         else:
             dumpster_idx = self.current_node - 1
-            fill = random.randrange(*self.fill_ranges[dumpster_idx]) / 10
+            fill = random.randrange(*self.fill_ranges[dumpster_idx])
+            print("FILL ", fill)
             if action == Action.PICKUP:
                 dist = self._update_path()
                 reward += Reward.PICKUP
@@ -105,10 +106,10 @@ class WasteNetEnv(gym.Env):
                 self.fill_levels[dumpster_idx] = fill
             else:
                 self.fill_levels[dumpster_idx] = min(
-                    1.0, self.fill_levels[dumpster_idx] + fill
+                    100, self.fill_levels[dumpster_idx] + fill
                 )
 
-            if self.fill_levels[dumpster_idx] == 1.0:
+            if self.fill_levels[dumpster_idx] == 100:
                 reward += Reward.OVERFLOW
 
         self.s = [self.current_node, self.fill_levels]

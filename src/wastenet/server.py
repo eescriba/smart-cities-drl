@@ -26,7 +26,7 @@ model_params = {
     "mode": UserSettableParameter(
         "choice",
         "Agent Mode",
-        value=WasteNetMode.COMPLETE.name,
+        value=WasteNetMode.PPO.name,
         choices=WasteNetMode.names(),
     ),
     "nb_days": UserSettableParameter(

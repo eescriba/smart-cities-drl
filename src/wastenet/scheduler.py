@@ -1,4 +1,4 @@
-import networkx as nx
+import random
 
 from core.scheduler import RLlibActivation
 from .agents import DumpsterAgent, BaseAgent
@@ -15,12 +15,14 @@ class WasteNetActivation(RLlibActivation):
         self.mode = mode
         self.last_checkpoint = 0
         self.mode_actions = {
-            WasteNetMode.COMPLETE.name: WasteNetAction.PICKUP,
+            WasteNetMode.COMPLETE.name: lambda: WasteNetAction.PICKUP,
+            WasteNetMode.OVERHALF.name: self._next_action_oh,
+            WasteNetMode.RANDOM.name: self._next_action_rnd,
         }
 
     def step(self) -> None:
 
-        action = self.mode_actions.get(self.mode, self.next_action())
+        action = self.mode_actions.get(self.mode, self.next_action)()
         done = self.forward(action)
 
         agent_idx = self.model.env.current_node
@@ -37,13 +39,26 @@ class WasteNetActivation(RLlibActivation):
         elif action == WasteNetAction.PICKUP:
             self._update_path(agent_idx)
             self.last_checkpoint = agent_idx
-            self.agents[agent_idx].fill_level = 0.0
+            self.agents[agent_idx].fill_level = 0
             self.agents[agent_idx].checkpoint = True
 
         self.steps += 1
         self.time += 1
 
         return done
+
+    def _next_action_rnd(self):
+        return random.choice(list(WasteNetAction))
+
+    def _next_action_oh(self):
+        node = self.model.env.current_node
+        if node >= self.model.env.nb_dumpsters:
+            return WasteNetAction.AVOID
+        return (
+            WasteNetAction.PICKUP
+            if self.model.env.fill_levels[self.model.env.current_node] > 50
+            else WasteNetAction.AVOID
+        )
 
     def _update_path(self, agent_idx):
         path = self.model.env.current_path

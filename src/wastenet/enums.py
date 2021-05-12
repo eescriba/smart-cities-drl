@@ -17,7 +17,7 @@ class WasteNetReward(IntEnum):
 class WasteNetMode(Enum):
     RANDOM = 0
     COMPLETE = 1
-    THRESHOLD = 2
+    OVERHALF = 2
     PPO = 3
 
     @classmethod
