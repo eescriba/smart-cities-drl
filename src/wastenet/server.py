@@ -5,6 +5,7 @@ from mesa.visualization.UserParam import UserSettableParameter
 from mesa.visualization.modules import ChartModule
 from mesa.visualization.modules import NetworkModule
 from .model import WasteNet
+from .enums import WasteNetMode
 from .visualization import network_portrayal, level_series, ResultsElement
 
 
@@ -14,14 +15,27 @@ text = ResultsElement()
 
 
 model_params = {
-    "nb_nodes": UserSettableParameter(
+    # "nb_nodes": UserSettableParameter(
+    #     "slider",
+    #     "Number of nodes",
+    #     value=9,
+    #     min_value=6,
+    #     max_value=12,
+    #     step=3,
+    # ),
+    "mode": UserSettableParameter(
+        "choice",
+        "Agent Mode",
+        value=WasteNetMode.COMPLETE.name,
+        choices=WasteNetMode.names(),
+    ),
+    "nb_days": UserSettableParameter(
         "slider",
-        "Number of nodes",
-        7,
-        7,
-        10,
-        1,
-        description="Choose how many nodes to include in the model",
+        "Total Days",
+        value=15,
+        min_value=7,
+        max_value=30,
+        step=1,
     ),
 }
 

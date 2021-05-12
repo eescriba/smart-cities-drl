@@ -49,25 +49,26 @@ class RLlibActivation(BaseScheduler):
         self.reward = 0
         self.last_reward = 0
 
-    def forward(self):
+    def next_action(self):
+        return self.rl_agent.compute_action(self.model.env.s)
+
+    def forward(self, action):
         """
         Execute next action
         """
-        action = self.rl_agent.compute_action(self.model.env.s)
         state, reward, done, info = self.model.env.step(action)
         print(state, reward, done, info)
         self.last_reward = reward
         self.reward += reward
-        if done:
-            self.model.env.reset()
-            self.reward = 0
-        return action, done
+
+        return done
 
     def step(self) -> None:
         """
         Executes the step of all agents, one at a time, in random order.
         """
-        self.forward()
+        action = self.next_action()
+        self.forward(action)
 
         for agent in self.agent_buffer(shuffled=True):
             agent.step()
