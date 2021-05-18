@@ -56,7 +56,7 @@ class WasteNetActivation(RLlibActivation):
             return WasteNetAction.AVOID
         return (
             WasteNetAction.PICKUP
-            if self.model.env.fill_levels[self.model.env.current_node] > 50
+            if self.model.env.fill_levels[self.model.env.current_node] > 40
             else WasteNetAction.AVOID
         )
 

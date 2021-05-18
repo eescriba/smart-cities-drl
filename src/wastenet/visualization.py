@@ -7,9 +7,9 @@ def network_portrayal(G):
             return "black"
         if agent.fill_level >= 100:
             return "red"
-        elif agent.fill_level >= 80:
+        elif agent.fill_level >= 75:
             return "orange"
-        elif agent.fill_level > 20:
+        elif agent.fill_level > 25:
             return "#ffe900"
         return "#008000"
 

@@ -11,7 +11,7 @@ class WasteNetReward(IntEnum):
     MOVE = -1
     PICKUP = -3
     OVERFLOW = -25
-    ROUTE_FINISH = 25
+    ROUTE_FINISH = 30
 
 
 class WasteNetMode(Enum):
