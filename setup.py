@@ -10,13 +10,7 @@ setup(
     packages=[""],
     install_requires=[
         "mesa",
-        "jupyter",
-        "numpy",
-        "matplotlib",
-        "keras-rl2",
         "gym",
-        "h5py",
-        "pillow",
-        "seaborn",
+        "ray[rllib]",
     ],
 )
