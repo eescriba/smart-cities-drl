@@ -7,13 +7,14 @@ from mesa.datacollection import DataCollector
 from mesa.space import NetworkGrid
 
 import ray
-from ray.rllib.agents.ppo import PPOTrainer, DEFAULT_CONFIG
+from ray.rllib.agents.ppo import PPOTrainer
 
 from .agents import DumpsterAgent, BaseAgent
 from .enums import WasteNetMode
 from .env import WasteNetEnv
-from .utils import generate_graph
+from .ppo import best_config
 from .scheduler import WasteNetActivation
+from .utils import generate_graph
 
 
 class WasteNet(Model):
@@ -32,8 +33,8 @@ class WasteNet(Model):
         # RL Agent
         if mode == WasteNetMode.PPO.name:
             ray.init(ignore_reinit_error=True)
-            rl_agent = PPOTrainer(DEFAULT_CONFIG.copy(), env=WasteNetEnv)
-            # rl_agent.restore("./checkpoints/checkpoint-143")
+            rl_agent = PPOTrainer(best_config, env=WasteNetEnv)
+            rl_agent.restore("./checkpoints/checkpoint-best")
         else:
             rl_agent = None
 
@@ -42,12 +43,13 @@ class WasteNet(Model):
 
         # Data Collector
         self.datacollector = DataCollector(
-            {
+            model_reporters={
                 "Empty": nb_empty,
                 "Medium": nb_medium,
                 "Full": nb_full,
                 "Overflow": nb_overflow,
-            }
+            },
+            agent_reporters={"Fill level (%)": fill_level, "": lambda a: 100},
         )
 
         # Mesa Agents
@@ -83,3 +85,7 @@ def nb_full(model):
 
 def nb_overflow(model):
     return sum(map(lambda l: l == 100, model.env.fill_levels))
+
+
+def fill_level(agent):
+    return getattr(agent, "fill_level", 0)

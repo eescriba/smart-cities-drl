@@ -56,6 +56,7 @@ class WasteNetEnv(gym.Env):
         self.fill_ranges = env_config.get("fill_ranges", generate_fill_ranges())
         self.total_days = env_config.get("nb_days", 30)
 
+        # Gym
         self.action_space = spaces.Discrete(2)
         self.observation_space = spaces.Tuple(
             [
@@ -69,6 +70,16 @@ class WasteNetEnv(gym.Env):
         )
         self.seed()
         self.s = self.reset()
+
+        # Stats
+        self.total_reward = 0
+        self.total_dist = 0
+        self.total_collected = 0
+        self.total_overflow = 0
+        self.mean_reward = 0
+        self.mean_dist = 0
+        self.mean_collected = 0
+        self.mean_overflow = 0
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
@@ -91,10 +102,12 @@ class WasteNetEnv(gym.Env):
             self.current_day += 1
             if self.current_day == self.total_days:
                 done = True
+            self._update_mean_stats()
         elif self.current_node == self.end_node:
             dist = self._update_path()
             reward += Reward.ROUTE_FINISH
             reward += Reward.MOVE * dist
+            self.total_dist += dist
         else:
             dumpster_idx = self.current_node - 1
             fill = random.randrange(*self.fill_ranges[dumpster_idx])
@@ -103,6 +116,8 @@ class WasteNetEnv(gym.Env):
                 reward += Reward.PICKUP
                 reward += Reward.MOVE * dist
                 self.fill_levels[dumpster_idx] = fill
+                self.total_dist += dist
+                self.total_collected += 1
             else:
                 self.fill_levels[dumpster_idx] = min(
                     100, self.fill_levels[dumpster_idx] + fill
@@ -110,9 +125,17 @@ class WasteNetEnv(gym.Env):
 
             if self.fill_levels[dumpster_idx] == 100:
                 reward += Reward.OVERFLOW
+                self.total_overflow += 1
 
         self.s = [self.current_node, self.fill_levels]
+        self.total_reward += reward
         return self.s, reward, done, {}
+
+    def _update_mean_stats(self):
+        self.mean_reward = self.total_reward / self.current_day
+        self.mean_dist = self.total_dist / self.current_day
+        self.mean_overflow = self.total_overflow / self.current_day
+        self.mean_collected = self.total_collected / self.current_day
 
     def _update_path(self):
         dist, path = single_source_dijkstra(

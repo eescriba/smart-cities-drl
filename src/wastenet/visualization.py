@@ -69,14 +69,29 @@ level_series = [
     {"Label": "Overflow", "Color": "red"},
 ]
 
+level_fields = [
+    {"Label": "", "Color": "transparent"},
+    {"Label": "Fill level (%)", "Color": "#83c3e3"},
+]
+
 
 class ResultsElement(TextElement):
     def render(self, model):
-        day = model.env.current_day
-        node = model.env.current_node
+        env = model.env
         reward = model.schedule.reward
         last_reward = model.schedule.last_reward
-        # return "Day: {}<br>Node: {}<br>Reward: {}({0:+d})".format(
-        #     day, node, reward, last_reward
-        # )
-        return f"Day: {day} <br>Node: {node}<br>Reward: {reward}({last_reward:+})"
+        return f"<div > \
+            <div style='float: left; width: 50%;'> \
+                <h3>Current run</h3> \
+                <span>Day: {env.current_day}</span><br> \
+                <span>Node: {env.current_node}</span><br> \
+                <span>Reward: {reward}({last_reward:+})</span><br> \
+            </div> \
+            <div style='float: left; width: 50%; margin-bottom: 20px;'> \
+                <h3>Avg per route</h3> \
+                <span>Distance: {env.mean_dist:.2f}</span><br> \
+                <span>Collected: {env.mean_collected:.2f}</span><br> \
+                <span>Overflows: {env.mean_overflow:.2f}</span><br> \
+                <span>Reward: {env.mean_reward:.2f}</span> \
+            </div> \
+            </div>"
