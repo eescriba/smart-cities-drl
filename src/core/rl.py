@@ -35,7 +35,7 @@ class RLlibAgent(ABC):
         """
         self.agent.restore(path)
 
-    def tune(self, config, stop_criteria, scheduler=None):
+    def tune(self, config, stop_criteria, num_samples=8, scheduler=None):
         """
         Tune hyperparameters for a RLlib agent
         """
@@ -46,6 +46,7 @@ class RLlibAgent(ABC):
             local_dir=RAY_DIR,
             stop=stop_criteria,
             scheduler=scheduler,
+            num_samples=num_samples,
             checkpoint_at_end=True,
         )
         return analysis
@@ -54,35 +55,33 @@ class RLlibAgent(ABC):
         """
         Train a RLlib agent
         """
-        analysis = self.tune(self.config, stop_criteria)
+        analysis = self.tune(self.config, stop_criteria, num_samples=1)
         checkpoint_path = analysis.get_trial_checkpoints_paths(
             trial=analysis.get_best_trial("episode_reward_mean"),
             metric="episode_reward_mean",
         )[0][0]
         return analysis, checkpoint_path
 
-    def test(self, num_steps):
+    def test(self, num_episodes):
         """
         Test trained agent for specified number of episodes
         """
         env = self.env_class(self.env_config)
-        obs = env.reset()
-        done = False
-        episode_reward = 0
-        sum_reward = 0
+        mean_reward = 0
 
-        for step in range(n_step):
-            action = self.agent.compute_action(obs)
-            print(action)
-            state, reward, done, info = env.step(action)
-            print(state, reward, done, info)
-            sum_reward += reward
-            if done:
-                print("cumulative reward", sum_reward)
-                state = env.reset()
-                sum_reward = 0
+        for n in range(num_episodes):
+            obs = env.reset()
+            done = False
+            episode_reward = 0
+            while not done:
+                action = self.agent.compute_action(obs)
+                print(action)
+                obs, reward, done, info = env.step(action)
+                print(obs, reward, done, info)
+                episode_reward += reward
+            mean_reward += episode_reward
 
-        return sum_reward
+        return mean_reward / num_episodes
 
 
 class PPOAgent(RLlibAgent):
