@@ -29,6 +29,10 @@ class RLlibAgent(ABC):
     def agent_class(self):
         raise NotImplementedError("Subclasses should implement agent_class field")
 
+    @property
+    def algorithm(self):
+        raise NotImplementedError("Subclasses should implement algorithm field")
+
     def load(self, path):
         """
         Load a trained RLlib agent from the specified checkpoint path.
@@ -40,7 +44,7 @@ class RLlibAgent(ABC):
         Tune hyperparameters for a RLlib agent
         """
         analysis = run(
-            self.agent.__class__,
+            self.agent_class,
             name=self.name,
             config=config,
             local_dir=RAY_DIR,
@@ -62,26 +66,34 @@ class RLlibAgent(ABC):
         )[0][0]
         return analysis, checkpoint_path
 
-    def test(self, num_episodes):
+    def test(self, num_episodes, verbose=False):
         """
         Test trained agent for specified number of episodes
         """
         env = self.env_class(self.env_config)
         mean_reward = 0
-
+        max_reward = 0
+        min_reward = 0
         for n in range(num_episodes):
             obs = env.reset()
             done = False
             episode_reward = 0
             while not done:
                 action = self.agent.compute_action(obs)
-                print(action)
                 obs, reward, done, info = env.step(action)
-                print(obs, reward, done, info)
                 episode_reward += reward
+            if verbose:
+                print("Episode reward: ", episode_reward)
             mean_reward += episode_reward
-
-        return mean_reward / num_episodes
+            max_reward = max(max_reward, episode_reward)
+            min_reward = min(min_reward, episode_reward)
+        mean_reward /= num_episodes
+        if verbose:
+            print("-----------------------")
+            print("Min reward: ", min_reward)
+            print("Max reward: ", max_reward)
+            print("Avg reward: ", episode_reward)
+        return mean_reward, min_reward, max_reward
 
 
 class PPOAgent(RLlibAgent):
