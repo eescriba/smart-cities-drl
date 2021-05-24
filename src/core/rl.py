@@ -16,8 +16,7 @@ RAY_DIR = "ray_results/"
 
 class RLlibAgent(ABC):
     def __init__(self, name, config, env_class, env_config):
-        ray.shutdown()
-        ray.init()
+        self.restart()
         self.name = name
         self.config = config
         self.env_class = env_class
@@ -31,20 +30,27 @@ class RLlibAgent(ABC):
     def agent_class(self):
         raise NotImplementedError("Subclasses should implement agent_class field")
 
+    def restart(self):
+        """
+        Restart Ray backend
+        """
+        ray.shutdown()
+        ray.init()
+
     def load(self, path):
         """
         Load a trained RLlib agent from the specified checkpoint path.
         """
         self.agent.restore(path)
 
-    def tune(self, config, stop_criteria, num_samples=8, scheduler=None):
+    def tune(self, stop_criteria, num_samples=8, scheduler=None):
         """
         Tune hyperparameters for a RLlib agent
         """
         return run(
             self.agent_class._name,
             name=self.name,
-            config=config,
+            config=self.config,
             local_dir=RAY_DIR,
             stop=stop_criteria,
             scheduler=scheduler,
@@ -62,10 +68,7 @@ class RLlibAgent(ABC):
             file_name = self.agent.save()
             if verbose:
                 print(
-                    f'{n+1:3d}: Min/Mean/Max reward: \
-                    {result["episode_reward_min"]:8.4f}\
-                    /{result["episode_reward_mean"]:8.4f}\
-                    /{result["episode_reward_max"]:8.4f}.\
+                    f'{n+1:3d}: Min/Mean/Max reward: {result["episode_reward_min"]:8.4f}/{result["episode_reward_mean"]:8.4f}/{result["episode_reward_max"]:8.4f}.\
                     Checkpoint saved to {file_name}'
                 )
         return results
