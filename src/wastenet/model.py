@@ -6,9 +6,7 @@ from mesa.time import RandomActivation
 from mesa.datacollection import DataCollector
 from mesa.space import NetworkGrid
 
-import ray
-from ray.rllib.agents.ppo import PPOTrainer
-
+from core.rl import PPOAgent
 from .agents import DumpsterAgent, BaseAgent
 from .enums import WasteNetMode
 from .env import WasteNetEnv
@@ -32,9 +30,8 @@ class WasteNet(Model):
 
         # RL Agent
         if mode == WasteNetMode.PPO.name:
-            ray.init(ignore_reinit_error=True)
-            rl_agent = PPOTrainer(best_config, env=WasteNetEnv)
-            rl_agent.restore("./checkpoints/checkpoint-best")
+            rl_agent = PPOAgent("WasteNet", best_config, WasteNetEnv, env_config)
+            rl_agent.load("./checkpoints/checkpoint-best")
         else:
             rl_agent = None
 

@@ -21,7 +21,8 @@ class RLlibAgent(ABC):
         self.config = config
         self.env_class = env_class
         self.env_config = env_config
-        self.env_config["num_gpus"] = len(tf.config.list_physical_devices("GPU"))
+        self.config.setdefault("num_workers", 1)
+        self.config.setdefault("num_gpus", len(tf.config.list_physical_devices("GPU")))
         self.agent = self.agent_class(config=config, env=env_class)
 
     @property
