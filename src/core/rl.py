@@ -99,7 +99,7 @@ class RLlibAgent(ABC):
             print("-----------------------")
             print("Min reward: ", min_reward)
             print("Max reward: ", max_reward)
-            print("Mean reward: ", episode_reward)
+            print("Mean reward: ", mean_reward)
         return mean_reward, min_reward, max_reward
 
 

@@ -13,8 +13,9 @@ class PbtOptimizer:
             custom_explore_fn=self.explore,
         )
 
-    # Postprocess the perturbed config to ensure it's still valid used if PBT.
+    @staticmethod
     def explore(config):
+        # Postprocess the perturbed config to ensure it's still valid used if PBT
         # ensure we collect enough timesteps to do sgd
         if config["train_batch_size"] < config["sgd_minibatch_size"] * 2:
             config["train_batch_size"] = config["sgd_minibatch_size"] * 2
