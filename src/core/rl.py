@@ -3,7 +3,7 @@ from abc import ABC, ABC
 
 import ray
 from ray.rllib.agents.dqn import DQNTrainer
-from ray.rllib.agents.ppo import PPOTrainer
+from ray.rllib.agents.ppo import PPOTrainer, DEFAULT_CONFIG
 from ray.tune import run, sample_from
 from ray.tune.logger import pretty_print
 from ray.tune.registry import register_env
@@ -15,7 +15,7 @@ RAY_DIR = "ray_results/"
 
 
 class RLlibAgent(ABC):
-    def __init__(self, name, config, env_class, env_config):
+    def __init__(self, name, env_class, env_config, config=DEFAULT_CONFIG):
         self.restart()
         self.name = name
         self.config = config
@@ -43,14 +43,14 @@ class RLlibAgent(ABC):
         """
         self.agent.restore(path)
 
-    def tune(self, stop_criteria, num_samples=8, scheduler=None):
+    def tune(self, config, stop_criteria, num_samples=8, scheduler=None):
         """
         Tune hyperparameters for a RLlib agent
         """
         return run(
             self.agent_class._name,
             name=self.name,
-            config=self.config,
+            config=config,
             local_dir=RAY_DIR,
             stop=stop_criteria,
             scheduler=scheduler,
