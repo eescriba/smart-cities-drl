@@ -19,21 +19,18 @@ logger = logging.getLogger(__name__)
 # X o o X o"""
 
 MAP_DATA = """
-# # # # # # # # # # # # # # #
-# # # # ▽ ◁ ◁ ◁ ◁ ◁ ◁ ◁ ◁ ◁ ◁
-# # # X ▽ # # # # # ▽ # X # △
-▷ ▷ ▷ ▷ o ▷ ▷ ▷ ▷ ▷ o ▷ ▷ ▷ o
-△ # # # ▽ # # X # # ▽ △ # # ▽
-△ # # # ▽ # # # # # ▽ △ # # ▽
-△ X # # ▽ # # # # # ▽ △ # # ▽
-△ # # # ▽ # # # # # ▽ △ # # ▽
-△ # # # ▽ # # # # # ▽ △ # # ▽
-△ ◁ ◁ ◁ o ◁ ◁ ◁ ◁ ◁ o o ◁ ◁ o
-△ + + + ▽ # # # # # o o ▷ ▷ o
-△ + + + ▽ # # # # # ▽ △ # X ▽
-△ + + + ▽ # # # # # ▽ △ # # ▽
-△ # # # ▽ # # # # X ▽ △ # # ▽
-△ ◁ ◁ ◁ ◁ ◁ ◁ ◁ ◁ ◁ o o ◁ ◁ o"""
+▷ ▷ ▷ ▷ o ▷ ▷ ▷ ▷ ▷ ▷ ▽
+△ # # # ▽ △ # # X # # ▽
+△ # # # ▽ △ # # # # # ▽
+△ X # # ▽ △ # # ▷ ▷ ▷ ▽
+△ # # # ▽ △ # # △ X # ▽
+△ # # # ▽ △ # # △ # # ▽
+△ ◁ ◁ ◁ o o ◁ ◁ o ◁ ◁ o
+△ ▷ ▷ ▷ o o ▷ ▷ o ▷ ▷ ▽
+△ + + + ▽ △ X # ▽ # # ▽
+△ + + + ▽ △ # # ▽ # # ▽
+△ # # # ▽ △ # # ▽ # # ▽
+△ ◁ ◁ ◁ ◁ o ◁ ◁ o ◁ ◁ ◁"""
 
 
 class SmartCabEnv(gym.Env):
@@ -66,7 +63,7 @@ class SmartCabEnv(gym.Env):
         self.action_space = Discrete(nb_actions)
         self.observation_space = Tuple(
             [
-                Box(0, 14, shape=(2,)),  # veh position (x, y)
+                Box(0, 11, shape=(2,)),  # veh position (x, y)
                 Discrete(nb_targets + 1),  # pass index (+1 in veh)
                 Discrete(nb_targets),  # dest index
             ]
@@ -98,7 +95,7 @@ class SmartCabEnv(gym.Env):
     def reset(self):
         self.num_steps = 0
         pass_idx, dest_idx = random.sample(set(range(len(self.targets))), 2)
-        self.state = dict(row=11, col=2, pass_idx=pass_idx, dest_idx=dest_idx)
+        self.state = dict(row=8, col=2, pass_idx=pass_idx, dest_idx=dest_idx)
         self.s = self.from_dict(self.state)
         self.last_loc = self.vehicle_loc
         return self.s
@@ -248,63 +245,92 @@ class SmartCabEnv(gym.Env):
 class HierarchicalSmartCabEnv(MultiAgentEnv):
     def __init__(self, env_config):
         self.flat_env = SmartCabEnv(env_config)
-        self.high_action_space = Discrete(2)
-        self.low_action_space = Discrete(5)
+        self.goal_action_space = Discrete(2)
+        self.action_action_space = Discrete(2)
+        self.move_action_space = Discrete(4)
 
     def reset(self):
         self.curr_obs = self.flat_env.reset()
         self.curr_goal = None
-        self.num_high_level_steps = 0
-        self.steps_remaining_at_level = 50
-        # Current low level agent unique id.
-        self.low_level_agent_id = "low_level_{}".format(self.num_high_level_steps)
+        self.num_goal_level_steps = 0
+        self.num_action_level_steps = 0
+        self.steps_remaining = 50
+        # Current low levels agents with unique id.
+        self.action_level_agent_id = "action_level_{}".format(self.num_goal_level_steps)
+        self.move_level_agent_id = "move_level_{}".format(self.num_action_level_steps)
         return {
-            "high_level_agent": self.curr_obs,
+            "goal_level_agent": self.curr_obs,
         }
 
     def step(self, action_dict):
         assert len(action_dict) == 1, action_dict
-        if "high_level_agent" in action_dict:
-            return self._high_level_step(action_dict["high_level_agent"])
+        if "goal_level_agent" in action_dict:
+            return self._goal_level_step(action_dict["goal_level_agent"])
+        elif "action_level_agent" in action_dict:
+            return self._action_level_step(action_dict["action_level_agent"])
         else:
-            return self._low_level_step(list(action_dict.values())[0])
+            return self._move_level_step(list(action_dict.values())[0])
 
-    def _high_level_step(self, action):
-        # print("High level agent sets goal {}".format(action))
-        self.curr_goal = action
-        self.curr_rew = 0
-        self.num_high_level_steps += 1
-        self.low_level_agent_id = "low_level_{}".format(self.num_high_level_steps)
-        obs = {self.low_level_agent_id: [self.curr_obs, self.curr_goal]}
-        rew = {self.low_level_agent_id: 0}
-        done = {"__all__": False}
+    def _goal_level_step(self, action):
+        if self.num_goal_level_steps != action:
+            obs = {"goal_level_agent": self.curr_obs}
+            rew = {"goal_level_agent": -9999}
+            done = {"__all__": True}
+        else:
+            self.curr_goal = action
+            self.curr_rew = 0
+            self.num_goal_level_steps += 1
+            self.action_level_agent_id = "action_level_{}".format(
+                self.num_goal_level_steps
+            )
+            obs = {self.action_level_agent_id: [self.curr_obs, self.curr_goal]}
+            rew = {self.action_level_agent_id: 0}
+            done = {"__all__": False}
         return obs, rew, done, {}
 
-    def _low_level_step(self, action):
-        # print("Low level agent step {}".format(action))
-        self.steps_remaining_at_level -= 1
-        # Map low-level action according to goal
-        if action == 4 and self.curr_goal == 1:
-            action = 5
+    def _action_level_step(self, action):
+        self.num_action_level_steps += 1
+        # Move action
+        if action == 0:
+            self.move_level_agent_id = "move_level_{}".format(
+                self.num_action_level_steps
+            )
+            obs = {self.move_level_agent_id: [self.curr_obs, self.curr_goal]}
+            rew = {self.move_level_agent_id: 0}
+            done = {"__all__": False}
+        # Pick or drop action
+        else:
+            # Map low-level action
+            action += 4
+            # Environment step
+            self.steps_remaining -= 1
+            f_obs, f_rew, f_done, _ = self.flat_env.step(action)
+            self.curr_obs = f_obs
+            self.curr_rew += f_rew
+            # Calculate action-level agent observation and reward
+            obs = {self.action_level_agent_id: [f_obs, self.curr_goal]}
+            rew = {self.action_level_agent_id: f_rew}
+            # Handle env/goal termination and transitions back to higher level
+            if f_rew > 0 or self.steps_remaining == 0:
+                rew["goal_level_agent"] = self.curr_rew
+                obs["goal_level_agent"] = f_obs
+                if f_done:
+                    done["__all__"] = True
+                else:
+                    done[self.action_level_agent_id] = True
+        return obs, rew, done, {}
 
+    def _move_level_step(self, action):
         # Environment step
+        self.steps_remaining -= 1
         f_obs, f_rew, f_done, _ = self.flat_env.step(action)
         self.curr_obs = f_obs
         self.curr_rew += f_rew
-
-        # Calculate low-level agent observation and reward
-        obs = {self.low_level_agent_id: [f_obs, self.curr_goal]}
-        rew = {self.low_level_agent_id: f_rew}
-
+        # Calculate move-level agent observation and reward
+        obs = {self.move_level_agent_id: [f_obs, self.curr_goal]}
+        rew = {self.move_level_agent_id: f_rew}
         # Handle env/goal termination and transitions back to higher level
         done = {"__all__": False}
-        if f_rew > 0 or self.steps_remaining_at_level == 0:
-            # print("High level reward {}".format(self.curr_rew))
-            rew["high_level_agent"] = self.curr_rew
-            obs["high_level_agent"] = f_obs
-            if f_done:
-                done["__all__"] = True
-            else:
-                done[self.low_level_agent_id] = True
-
+        if f_done or self.steps_remaining == 0:
+            done[self.move_level_agent_id] = True
         return obs, rew, done, {}

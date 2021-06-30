@@ -15,8 +15,6 @@ TARGET_COLORS = [
     "#EF5350",
     "#AB47BC",
     "#42A5F5",
-    "#26A69A",
-    "#FFEE58",
     "#FFA726",
 ]
 
