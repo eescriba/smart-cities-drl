@@ -2,10 +2,12 @@ from ray.tune.schedulers import PopulationBasedTraining
 
 
 class PbtOptimizer:
-    def __init__(self, hyperparam_mutations):
+    def __init__(
+        self, hyperparam_mutations, time_attr="time_total_s", perturbation_interval=60
+    ):
         self.scheduler = PopulationBasedTraining(
-            time_attr="time_total_s",
-            perturbation_interval=120,
+            time_attr=time_attr,
+            perturbation_interval=perturbation_interval,
             resample_probability=0.25,
             metric="episode_reward_mean",
             mode="max",
