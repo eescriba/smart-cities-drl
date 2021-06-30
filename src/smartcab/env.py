@@ -18,19 +18,30 @@ logger = logging.getLogger(__name__)
 # o o o o o
 # X o o X o"""
 
+# MAP_DATA = """
+# ▷ ▷ ▷ ▷ o ▷ ▷ ▷ ▷ ▷ ▷ ▽
+# △ # # # ▽ △ # # X # # ▽
+# △ # # # ▽ △ # # # # # ▽
+# △ X # # ▽ △ # # ▷ ▷ ▷ ▽
+# △ # # # ▽ △ # # △ X # ▽
+# △ # # # ▽ △ # # △ # # ▽
+# △ ◁ ◁ ◁ o o ◁ ◁ o ◁ ◁ o
+# △ ▷ ▷ ▷ o o ▷ ▷ o ▷ ▷ ▽
+# △ + + + ▽ △ X # ▽ # # ▽
+# △ + + + ▽ △ # # ▽ # # ▽
+# △ # # # ▽ △ # # ▽ # # ▽
+# △ ◁ ◁ ◁ ◁ o ◁ ◁ o ◁ ◁ ◁"""
+
+
 MAP_DATA = """
-▷ ▷ ▷ ▷ o ▷ ▷ ▷ ▷ ▷ ▷ ▽
-△ # # # ▽ △ # # X # # ▽
-△ # # # ▽ △ # # # # # ▽
-△ X # # ▽ △ # # ▷ ▷ ▷ ▽
-△ # # # ▽ △ # # △ X # ▽
-△ # # # ▽ △ # # △ # # ▽
-△ ◁ ◁ ◁ o o ◁ ◁ o ◁ ◁ o
-△ ▷ ▷ ▷ o o ▷ ▷ o ▷ ▷ ▽
-△ + + + ▽ △ X # ▽ # # ▽
-△ + + + ▽ △ # # ▽ # # ▽
-△ # # # ▽ △ # # ▽ # # ▽
-△ ◁ ◁ ◁ ◁ o ◁ ◁ o ◁ ◁ ◁"""
+▷ ▷ ▷ ▷ o ▷ ▷ ▽
+△ # # # ▽ △ X ▽
+△ # X # ▽ △ # ▽
+△ ◁ ◁ ◁ o o ◁ o
+△ ▷ ▷ ▷ o o ▷ ▽
+△ + + # ▽ △ X ▽
+o + + X ▽ △ # ▽
+△ ◁ ◁ ◁ ◁ o ◁ ◁"""
 
 
 class SmartCabEnv(gym.Env):
@@ -63,7 +74,7 @@ class SmartCabEnv(gym.Env):
         self.action_space = Discrete(nb_actions)
         self.observation_space = Tuple(
             [
-                Box(0, 11, shape=(2,)),  # veh position (x, y)
+                Box(0, 7, shape=(2,)),  # veh position (x, y)
                 Discrete(nb_targets + 1),  # pass index (+1 in veh)
                 Discrete(nb_targets),  # dest index
             ]
@@ -95,7 +106,7 @@ class SmartCabEnv(gym.Env):
     def reset(self):
         self.num_steps = 0
         pass_idx, dest_idx = random.sample(set(range(len(self.targets))), 2)
-        self.state = dict(row=8, col=2, pass_idx=pass_idx, dest_idx=dest_idx)
+        self.state = dict(row=5, col=2, pass_idx=pass_idx, dest_idx=dest_idx)
         self.s = self.from_dict(self.state)
         self.last_loc = self.vehicle_loc
         return self.s
@@ -263,6 +274,7 @@ class HierarchicalSmartCabEnv(MultiAgentEnv):
         }
 
     def step(self, action_dict):
+        assert len(action_dict) == 1, action_dict
         if "goal_level_agent" in action_dict:
             return self._goal_level_step(action_dict["goal_level_agent"])
         elif "action_level_agent" in action_dict:

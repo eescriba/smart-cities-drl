@@ -19,8 +19,8 @@ class SmartCabModel(Model):
     def __init__(
         self,
         show_symbols,
-        width=12,
-        height=12,
+        width=8,
+        height=8,
     ):
 
         super().__init__()
