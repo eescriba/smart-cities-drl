@@ -15,7 +15,6 @@ class SmartCabReward(Enum):
     DEFAULT = -1
     ACTION_OK = 30
     ACTION_ERROR = -20
-    ILLEGAL_MOVE = -50
 
 
 class GridSymbol(Enum):

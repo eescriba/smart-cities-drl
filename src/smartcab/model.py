@@ -6,7 +6,8 @@ from mesa import Model
 from mesa.datacollection import DataCollector
 
 import ray
-from ray.rllib.agents.dqn import DQNTrainer, DEFAULT_CONFIG
+
+from core.rl import PPOAgent
 
 from .agents import GridAgent, PassengerAgent, TargetAgent, VehicleAgent
 from .env import SmartCabEnv
@@ -17,10 +18,6 @@ from .space import SmartCabMultiGrid
 class SmartCabModel(Model):
     def __init__(
         self,
-        rl_agent,
-        nb_vehicles,
-        nb_targets,
-        nb_passengers,
         show_symbols,
         width=15,
         height=15,
@@ -28,18 +25,16 @@ class SmartCabModel(Model):
 
         super().__init__()
 
-        self.schedule = SmartCabActivation(self, rl_agent)
         self.grid = SmartCabMultiGrid(width, height, True)
         self.show_symbols = show_symbols
 
         env_config = {}
         self.env = SmartCabEnv(env_config)
 
-        ray.init(ignore_reinit_error=True)
-        dqn = DQNTrainer(DEFAULT_CONFIG.copy(), env=SmartCabEnv)
+        rl_agent = PPOAgent("SmartCab", SmartCabEnv, env_config)
+        # rl_agent.load("./checkpoints/checkpoint-best")
 
-        self.schedule = SmartCabActivation(self, rl_agent=dqn)
-
+        self.schedule = SmartCabActivation(self, rl_agent=rl_agent)
         self._init_environment(self.env)
 
         self.datacollector = DataCollector(

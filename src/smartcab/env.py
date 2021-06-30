@@ -43,7 +43,6 @@ class SmartCabEnv(gym.Env):
         ]
         self.height = len(self.grid)
         self.width = len(self.grid[0])
-        logger.info("Loaded map {} {}".format(self.height, self.width))
         self.targets = []
         for i, row in enumerate(self.grid):
             for j, cell in enumerate(row):
@@ -190,30 +189,33 @@ class SmartCabEnv(gym.Env):
 
     def pickup(self):
         new_state, reward, done = self.default_state()
-        if (
-            self.state["pass_idx"] < self.aboard_idx
-            and self.vehicle_loc == self.passenger_loc
-        ):
+        if self.can_pickup():
             self.state["pass_idx"] = self.aboard_idx
-        else:  # passenger not at location
+            reward = SmartCabReward.ACTION_OK.value
+        else:
             reward = SmartCabReward.ACTION_ERROR.value
         return new_state, reward, done
 
     def dropoff(self):
         new_state, reward, done = self.default_state()
-        if (self.vehicle_loc == self.passenger_loc) and self.state[
-            "pass_idx"
-        ] == self.aboard_idx:
+        if self.can_dropoff():
             new_state["pass_idx"] = self.state["dest_idx"]
-            done = True
             reward = SmartCabReward.ACTION_OK.value
-        elif (self.vehicle_loc in self.targets) and self.state[
-            "pass_idx"
-        ] == self.aboard_idx:
-            new_state["pass_idx"] = self.targets.index(self.vehicle_loc)
-        else:  # dropoff at wrong location
+            done = True
+        else:
             reward = SmartCabReward.ACTION_ERROR.value
         return new_state, reward, done
+
+    def can_pickup(self):
+        return (
+            self.state["pass_idx"] < self.aboard_idx
+            and self.vehicle_loc == self.passenger_loc
+        )
+
+    def can_dropoff(self):
+        return (self.vehicle_loc == self.passenger_dest) and self.state[
+            "pass_idx"
+        ] == self.aboard_idx
 
 
 class HierarchicalSmartCabEnv(MultiAgentEnv):
@@ -224,6 +226,7 @@ class HierarchicalSmartCabEnv(MultiAgentEnv):
         self.curr_obs = self.flat_env.reset()
         self.curr_goal = None
         self.num_high_level_steps = 0
+        self.steps_remaining_at_level = 100
         # Current low level agent unique id.
         self.low_level_agent_id = "low_level_{}".format(self.num_high_level_steps)
         return {
@@ -249,8 +252,8 @@ class HierarchicalSmartCabEnv(MultiAgentEnv):
         return obs, rew, done, {}
 
     def _low_level_step(self, action):
-        print("Low level agent step {}".format(action))
-
+        # print("Low level agent step {}".format(action))
+        self.steps_remaining_at_level -= 1
         # Map low-level action according to goal
         if action == 4 and self.curr_goal == 1:
             action = 5
@@ -266,7 +269,7 @@ class HierarchicalSmartCabEnv(MultiAgentEnv):
 
         # Handle env/goal termination and transitions back to higher level
         done = {"__all__": False}
-        if f_rew > 0:
+        if f_rew > 0 or self.steps_remaining_at_level == 0:
             print("High level reward {}".format(self.curr_rew))
             rew["high_level_agent"] = self.curr_rew
             obs["high_level_agent"] = f_obs

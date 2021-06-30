@@ -17,9 +17,7 @@ chart = ChartModule(
     [{"Label": "Reward", "Color": "Green"}], data_collector_name="datacollector"
 )
 
-
 model_params = {
-    "rl_agent": None,
     "width": grid_w,
     "height": grid_h,
     "show_symbols": UserSettableParameter(
@@ -27,9 +25,6 @@ model_params = {
         "Show Directions",
         value=True,
     ),
-    "nb_vehicles": UserSettableParameter("slider", "Number of vehicles", 1, 1, 2),
-    "nb_passengers": UserSettableParameter("slider", "Number of passengers", 1, 1, 4),
-    "nb_targets": UserSettableParameter("slider", "Number of targets", 6, 6, 6),
 }
 
 server = ModularServer(

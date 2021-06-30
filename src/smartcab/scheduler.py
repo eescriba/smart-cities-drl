@@ -12,8 +12,8 @@ class SmartCabActivation(RLlibActivation):
         """
         Executes the step of all agents, one at a time, in random order.
         """
-
-        action, done = self.forward()
+        action = self.next_action()
+        done = self.forward(action)
         print("Action:", action)
 
         vehicle_loc = self.model.env.vehicle_loc
