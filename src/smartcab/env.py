@@ -270,7 +270,7 @@ class HierarchicalSmartCabEnv(MultiAgentEnv):
             return self._low_level_step(list(action_dict.values())[0])
 
     def _high_level_step(self, action):
-        print("High level agent sets goal {}".format(action))
+        # print("High level agent sets goal {}".format(action))
         self.curr_goal = action
         self.curr_rew = 0
         self.num_high_level_steps += 1
@@ -299,7 +299,7 @@ class HierarchicalSmartCabEnv(MultiAgentEnv):
         # Handle env/goal termination and transitions back to higher level
         done = {"__all__": False}
         if f_rew > 0 or self.steps_remaining_at_level == 0:
-            print("High level reward {}".format(self.curr_rew))
+            # print("High level reward {}".format(self.curr_rew))
             rew["high_level_agent"] = self.curr_rew
             obs["high_level_agent"] = f_obs
             if f_done:
