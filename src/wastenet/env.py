@@ -42,7 +42,7 @@ class WasteNetEnv(gym.Env):
 
     Episode Termination:
         Current node: N
-        Current day: 6
+        Current day: D - 1
 
     """
 

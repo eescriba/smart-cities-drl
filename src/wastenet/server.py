@@ -29,12 +29,12 @@ model_params = {
         value=WasteNetMode.COMPLETE.name,
         choices=WasteNetMode.names(),
     ),
-    "nb_days": UserSettableParameter(
+    "nb_episodes": UserSettableParameter(
         "slider",
-        "Total Days",
-        value=15,
-        min_value=7,
-        max_value=100,
+        "Number of Episodes",
+        value=1,
+        min_value=1,
+        max_value=2000,
         step=1,
     ),
 }

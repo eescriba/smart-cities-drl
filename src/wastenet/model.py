@@ -18,19 +18,19 @@ from .utils import generate_graph
 class WasteNet(Model):
     """Waste collection network model"""
 
-    def __init__(self, mode, nb_nodes=10, nb_days=15):
+    def __init__(self, mode, nb_nodes=10, nb_episodes=1):
 
         # Network
         self.G = generate_graph(nb_nodes)
         self.grid = NetworkGrid(self.G)
 
         # Gym Environment
-        env_config = dict(graph=self.G, nb_days=nb_days)
+        env_config = dict(graph=self.G)
         self.env = WasteNetEnv(env_config)
 
         # RL Agent
         if mode == WasteNetMode.PPO.name:
-            rl_agent = PPOAgent("WasteNet", best_config, WasteNetEnv, env_config)
+            rl_agent = PPOAgent("WasteNet", WasteNetEnv, env_config, best_config)
             rl_agent.load("./checkpoints/checkpoint-best")
         else:
             rl_agent = None
@@ -58,6 +58,7 @@ class WasteNet(Model):
             self.schedule.add(a)
             self.grid.place_agent(a, node)
 
+        self.remaining_episodes = nb_episodes
         self.running = True
         self.datacollector.collect(self)
 
@@ -65,6 +66,9 @@ class WasteNet(Model):
         done = self.schedule.step()
         self.datacollector.collect(self)
         if done:
+            self.env.reset()
+            self.remaining_episodes -= 1
+        if self.remaining_episodes == 0:
             self.running = False
 
 
