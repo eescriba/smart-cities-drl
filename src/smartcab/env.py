@@ -248,12 +248,14 @@ class SmartCabEnv(gym.Env):
 class HierarchicalSmartCabEnv(MultiAgentEnv):
     def __init__(self, env_config):
         self.flat_env = SmartCabEnv(env_config)
+        self.high_action_space = Discrete(2)
+        self.low_action_space = Discrete(5)
 
     def reset(self):
         self.curr_obs = self.flat_env.reset()
         self.curr_goal = None
         self.num_high_level_steps = 0
-        self.steps_remaining_at_level = 100
+        self.steps_remaining_at_level = 50
         # Current low level agent unique id.
         self.low_level_agent_id = "low_level_{}".format(self.num_high_level_steps)
         return {
