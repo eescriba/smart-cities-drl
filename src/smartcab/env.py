@@ -76,6 +76,7 @@ class SmartCabEnv(gym.Env):
 
         self.max_row = self.height - 1
         self.max_col = self.width - 1
+        self.around_coords = [(0, 0), (0, 1), (0, -1), (1, 0), (-1, 0)]
         self.reset()
 
     @property
@@ -99,11 +100,14 @@ class SmartCabEnv(gym.Env):
         pass_idx, dest_idx = random.sample(set(range(len(self.targets))), 2)
         self.state = dict(row=11, col=2, pass_idx=pass_idx, dest_idx=dest_idx)
         self.s = self.from_dict(self.state)
+        self.last_loc = self.vehicle_loc
         return self.s
 
     def step(self, action):
         self.num_steps += 1
         state, reward, done = self.actions[action]()
+        if self.last_loc != (state["row"], state["col"]):
+            self.last_loc = (state["row"], state["col"])
         self.state = state
         self.s = self.from_dict(self.state)
         return self.s, reward, done, {}
@@ -127,9 +131,13 @@ class SmartCabEnv(gym.Env):
         if self.current_cell in [GridSymbol.DOWN.value] + GridSymbol.valid_defaults():
             new_row = min(self.state["row"] + 1, self.max_row)
             next_cell = self.grid[new_row][self.state["col"]]
-            if next_cell == GridSymbol.BLOCK.value or (
-                self.current_cell == GridSymbol.CROSS.value
-                and next_cell == GridSymbol.RIGHT.value
+            if (
+                next_cell == GridSymbol.BLOCK.value
+                or self.last_loc == (new_row, self.state["col"])
+                or (
+                    self.current_cell == GridSymbol.CROSS.value
+                    and next_cell == GridSymbol.RIGHT.value
+                )
             ):
                 reward = SmartCabReward.ACTION_ERROR.value
             else:
@@ -143,9 +151,13 @@ class SmartCabEnv(gym.Env):
         if self.current_cell in [GridSymbol.UP.value] + GridSymbol.valid_defaults():
             new_row = max(self.state["row"] - 1, 0)
             next_cell = self.grid[new_row][self.state["col"]]
-            if next_cell == GridSymbol.BLOCK.value or (
-                self.current_cell == GridSymbol.CROSS.value
-                and next_cell == GridSymbol.DOWN.value
+            if (
+                next_cell == GridSymbol.BLOCK.value
+                or self.last_loc == (new_row, self.state["col"])
+                or (
+                    self.current_cell == GridSymbol.CROSS.value
+                    and next_cell == GridSymbol.DOWN.value
+                )
             ):
                 reward = SmartCabReward.ACTION_ERROR.value
             else:
@@ -159,9 +171,13 @@ class SmartCabEnv(gym.Env):
         if self.current_cell in [GridSymbol.RIGHT.value] + GridSymbol.valid_defaults():
             new_col = min(self.state["col"] + 1, self.max_col)
             next_cell = self.grid[self.state["row"]][new_col]
-            if next_cell == GridSymbol.BLOCK.value or (
-                self.current_cell == GridSymbol.CROSS.value
-                and next_cell == GridSymbol.LEFT.value
+            if (
+                next_cell == GridSymbol.BLOCK.value
+                or self.last_loc == (self.state["row"], new_col)
+                or (
+                    self.current_cell == GridSymbol.CROSS.value
+                    and next_cell == GridSymbol.LEFT.value
+                )
             ):
                 reward = SmartCabReward.ACTION_ERROR.value
             else:
@@ -175,9 +191,13 @@ class SmartCabEnv(gym.Env):
         if self.current_cell in [GridSymbol.LEFT.value] + GridSymbol.valid_defaults():
             new_col = max(self.state["col"] - 1, 0)
             next_cell = self.grid[self.state["row"]][new_col]
-            if next_cell == GridSymbol.BLOCK.value or (
-                self.current_cell == GridSymbol.CROSS.value
-                and next_cell == GridSymbol.RIGHT.value
+            if (
+                next_cell == GridSymbol.BLOCK.value
+                or self.last_loc == (self.state["row"], new_col)
+                or (
+                    self.current_cell == GridSymbol.CROSS.value
+                    and next_cell == GridSymbol.RIGHT.value
+                )
             ):
                 reward = SmartCabReward.ACTION_ERROR.value
             else:
@@ -190,7 +210,7 @@ class SmartCabEnv(gym.Env):
     def pickup(self):
         new_state, reward, done = self.default_state()
         if self.can_pickup():
-            self.state["pass_idx"] = self.aboard_idx
+            new_state["pass_idx"] = self.aboard_idx
             reward = SmartCabReward.ACTION_OK.value
         else:
             reward = SmartCabReward.ACTION_ERROR.value
@@ -207,15 +227,22 @@ class SmartCabEnv(gym.Env):
         return new_state, reward, done
 
     def can_pickup(self):
-        return (
-            self.state["pass_idx"] < self.aboard_idx
-            and self.vehicle_loc == self.passenger_loc
+        return self.state["pass_idx"] < self.aboard_idx and self.around_vehicle(
+            self.passenger_loc
         )
 
     def can_dropoff(self):
-        return (self.vehicle_loc == self.passenger_dest) and self.state[
-            "pass_idx"
-        ] == self.aboard_idx
+        return self.state["pass_idx"] == self.aboard_idx and self.around_vehicle(
+            self.passenger_dest
+        )
+
+    def around_vehicle(self, location):
+        return any(
+            [
+                location == tuple(np.add(self.vehicle_loc, coords))
+                for coords in self.around_coords
+            ]
+        )
 
 
 class HierarchicalSmartCabEnv(MultiAgentEnv):
