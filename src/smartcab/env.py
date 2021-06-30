@@ -263,7 +263,6 @@ class HierarchicalSmartCabEnv(MultiAgentEnv):
         }
 
     def step(self, action_dict):
-        assert len(action_dict) == 1, action_dict
         if "goal_level_agent" in action_dict:
             return self._goal_level_step(action_dict["goal_level_agent"])
         elif "action_level_agent" in action_dict:
