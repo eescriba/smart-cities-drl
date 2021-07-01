@@ -40,7 +40,7 @@ MAP_DATA = """
 △ ◁ ◁ ◁ o o ◁ o
 o ▷ ▷ ▷ o o ▷ ▽
 △ + + # ▽ △ X ▽
-o + + X ▽ △ # ▽
+△ + + X ▽ △ # ▽
 △ ◁ ◁ ◁ ◁ o ◁ ◁"""
 
 
@@ -147,11 +147,11 @@ class SmartCabEnv(gym.Env):
                     and next_cell == GridSymbol.RIGHT.value
                 )
             ):
-                reward = SmartCabReward.ACTION_ERROR.value
+                reward = SmartCabReward.MOVE_ERROR.value
             else:
                 new_state["row"] = new_row
         else:
-            reward = SmartCabReward.ACTION_ERROR.value
+            reward = SmartCabReward.MOVE_ERROR.value
         return new_state, reward, done
 
     def move_north(self):
@@ -167,11 +167,11 @@ class SmartCabEnv(gym.Env):
                     and next_cell == GridSymbol.DOWN.value
                 )
             ):
-                reward = SmartCabReward.ACTION_ERROR.value
+                reward = SmartCabReward.MOVE_ERROR.value
             else:
                 new_state["row"] = new_row
         else:
-            reward = SmartCabReward.ACTION_ERROR.value
+            reward = SmartCabReward.MOVE_ERROR.value
         return new_state, reward, done
 
     def move_east(self):
@@ -187,11 +187,11 @@ class SmartCabEnv(gym.Env):
                     and next_cell == GridSymbol.LEFT.value
                 )
             ):
-                reward = SmartCabReward.ACTION_ERROR.value
+                reward = SmartCabReward.MOVE_ERROR.value
             else:
                 new_state["col"] = new_col
         else:
-            reward = SmartCabReward.ACTION_ERROR.value
+            reward = SmartCabReward.MOVE_ERROR.value
         return new_state, reward, done
 
     def move_west(self):
@@ -207,11 +207,11 @@ class SmartCabEnv(gym.Env):
                     and next_cell == GridSymbol.RIGHT.value
                 )
             ):
-                reward = SmartCabReward.ACTION_ERROR.value
+                reward = SmartCabReward.MOVE_ERROR.value
             else:
                 new_state["col"] = new_col
         else:
-            reward = SmartCabReward.ACTION_ERROR.value
+            reward = SmartCabReward.MOVE_ERROR.value
 
         return new_state, reward, done
 

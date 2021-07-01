@@ -14,7 +14,8 @@ class SmartCabAction(Enum):
 class SmartCabReward(Enum):
     DEFAULT = -1
     ACTION_OK = 30
-    ACTION_ERROR = -20
+    ACTION_ERROR = -10
+    MOVE_ERROR = -3
 
 
 class GridSymbol(Enum):
@@ -29,7 +30,7 @@ class GridSymbol(Enum):
 
     @classmethod
     def valid_defaults(cls):
-        return [cls.CROSS.value, cls.TARGET.value, cls.STATION.value]
+        return [cls.CROSS.value]
 
     @classmethod
     def directions(cls):
