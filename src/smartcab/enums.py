@@ -30,7 +30,7 @@ class GridSymbol(Enum):
 
     @classmethod
     def valid_defaults(cls):
-        return [cls.CROSS.value, cls.STATION.value]
+        return [cls.CROSS.value, cls.TARGET.value, cls.STATION.value]
 
     @classmethod
     def directions(cls):
