@@ -73,7 +73,7 @@ class SmartCabEnv(gym.Env):
         nb_actions = len(self.actions)
         nb_targets = len(self.targets)
 
-        self.max_energy = env_config.get("energy", 50)
+        self.max_energy = env_config.get("max_energy", 50)
         self.aboard_idx = nb_targets
         self.action_space = Discrete(nb_actions)
         self.observation_space = Tuple(
@@ -87,7 +87,6 @@ class SmartCabEnv(gym.Env):
         self.max_row = self.height - 1
         self.max_col = self.width - 1
         self.around_coords = [(0, 0), (0, 1), (0, -1), (1, 0), (-1, 0)]
-        self.passengers_remaining = env_config.get("nb_passengers", 6)
         self.reset()
 
     @property
@@ -113,8 +112,13 @@ class SmartCabEnv(gym.Env):
     def reset(self):
         self.num_steps = 0
         pass_idx, dest_idx = self.new_passenger()
+        energy = random.randrange(10, self.max_energy)
         self.state = dict(
-            row=5, col=2, pass_idx=pass_idx, dest_idx=dest_idx, energy=self.max_energy
+            row=self.max_row,
+            col=self.max_col,
+            pass_idx=pass_idx,
+            dest_idx=dest_idx,
+            energy=energy,
         )
         self.s = self.from_dict(self.state)
         self.last_loc = self.vehicle_loc
@@ -247,13 +251,7 @@ class SmartCabEnv(gym.Env):
         if self.can_dropoff():
             new_state["pass_idx"] = self.state["dest_idx"]
             reward = SmartCabReward.ACTION_OK.value
-            self.passengers_remaining -= 1
-            if self.passengers_remaining:
-                pass_idx, dest_idx = self.new_passenger()
-                new_state["pass_idx"] = pass_idx
-                new_state["dest_idx"] = dest_idx
-            else:
-                done = True
+            done = True
         else:
             reward = SmartCabReward.ACTION_ERROR.value
         return new_state, reward, done

@@ -82,9 +82,8 @@ class ResultsElement(TextElement):
         return f"<div > \
             <div style='float: left; width: 50%;'> \
                 <h3>Current episode</h3> \
-                <span>Steps: {env.num_steps})</span><br> \
+                <span>Steps: {env.num_steps}</span><br> \
                 <span>Reward: {reward}({last_reward:+})</span><br> \
                 <span>Energy: {env.energy_remaining}</span><br> \
-                <span>Passengers remaining: {env.passengers_remaining}</span><br> \
             </div> \
             </div>"

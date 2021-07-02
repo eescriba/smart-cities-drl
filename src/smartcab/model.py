@@ -17,19 +17,19 @@ from .space import SmartCabMultiGrid
 
 
 class SmartCabModel(Model):
-    def __init__(self, show_symbols, width=8, height=8, nb_passengers=6, energy=50):
+    def __init__(self, show_symbols, width=8, height=8, nb_passengers=6, max_energy=50):
 
         super().__init__()
 
         self.grid = SmartCabMultiGrid(width, height, True)
         self.show_symbols = show_symbols
 
-        env_config = {"nb_passengers": nb_passengers, "energy": energy}
+        env_config = {"max_energy": max_energy}
 
         self.env = SmartCabEnv(env_config)
 
         rl_agent = PPOAgent("SmartCab", SmartCabEnv, env_config, best_config)
-        # rl_agent.load("./checkpoints/checkpoint-178")
+        # rl_agent.load("./checkpoints/checkpoint-76")
 
         self.schedule = SmartCabActivation(self, rl_agent=rl_agent)
         self._init_environment(self.env)
