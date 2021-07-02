@@ -11,28 +11,25 @@ from core.rl import PPOAgent
 
 from .agents import GridAgent, PassengerAgent, TargetAgent, VehicleAgent
 from .env import SmartCabEnv
+from .ppo import best_config
 from .scheduler import SmartCabActivation
 from .space import SmartCabMultiGrid
 
 
 class SmartCabModel(Model):
-    def __init__(
-        self,
-        show_symbols,
-        width=8,
-        height=8,
-    ):
+    def __init__(self, show_symbols, width=8, height=8, nb_passengers=6, energy=50):
 
         super().__init__()
 
         self.grid = SmartCabMultiGrid(width, height, True)
         self.show_symbols = show_symbols
 
-        env_config = {}
+        env_config = {"nb_passengers": nb_passengers, "energy": energy}
+
         self.env = SmartCabEnv(env_config)
 
-        rl_agent = PPOAgent("SmartCab", SmartCabEnv, env_config)
-        # rl_agent.load("./checkpoints/checkpoint-best")
+        rl_agent = PPOAgent("SmartCab", SmartCabEnv, env_config, best_config)
+        # rl_agent.load("./checkpoints/checkpoint-178")
 
         self.schedule = SmartCabActivation(self, rl_agent=rl_agent)
         self._init_environment(self.env)
@@ -64,7 +61,7 @@ class SmartCabModel(Model):
         self.grid.place_agent(veh_agent, env.vehicle_loc)
 
     def step(self):
-        self.schedule.step()
-        # if done:
-        #     self.running = False
+        done = self.schedule.step()
+        if done:
+            self.running = False
         self.datacollector.collect(self)

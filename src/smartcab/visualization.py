@@ -1,5 +1,8 @@
+from mesa.visualization.modules import TextElement
+
 from .agents import GridAgent, TargetAgent, PassengerAgent, VehicleAgent
 from .enums import GridSymbol
+
 
 SYMBOLS_MAP = {
     "#": "#f1f3f4",
@@ -69,3 +72,19 @@ def agent_portrayal(agent):
                 }
             )
     return portrayal
+
+
+class ResultsElement(TextElement):
+    def render(self, model):
+        env = model.env
+        reward = model.schedule.reward
+        last_reward = model.schedule.last_reward
+        return f"<div > \
+            <div style='float: left; width: 50%;'> \
+                <h3>Current episode</h3> \
+                <span>Steps: {env.num_steps})</span><br> \
+                <span>Reward: {reward}({last_reward:+})</span><br> \
+                <span>Energy: {env.energy_remaining}</span><br> \
+                <span>Passengers remaining: {env.passengers_remaining}</span><br> \
+            </div> \
+            </div>"

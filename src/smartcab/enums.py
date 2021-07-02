@@ -16,6 +16,8 @@ class SmartCabReward(Enum):
     ACTION_OK = 30
     ACTION_ERROR = -10
     MOVE_ERROR = -3
+    RECHARGE = -5
+    NO_ENERGY = -30
 
 
 class GridSymbol(Enum):

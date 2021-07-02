@@ -3,7 +3,7 @@ from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.UserParam import UserSettableParameter
 
 from .model import SmartCabModel
-from .visualization import agent_portrayal
+from .visualization import agent_portrayal, ResultsElement
 
 # from .rl_agents import dqn
 
@@ -16,6 +16,7 @@ grid = CanvasGrid(agent_portrayal, grid_w, grid_h, CANVAS_WIDTH, CANVAS_HEIGHT)
 chart = ChartModule(
     [{"Label": "Reward", "Color": "Green"}], data_collector_name="datacollector"
 )
+text = ResultsElement()
 
 model_params = {
     "width": grid_w,
@@ -28,5 +29,5 @@ model_params = {
 }
 
 server = ModularServer(
-    SmartCabModel, [grid], "SmartCab Model", model_params=model_params
+    SmartCabModel, [grid, text], "SmartCab Model", model_params=model_params
 )
