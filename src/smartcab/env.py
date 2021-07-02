@@ -157,8 +157,6 @@ class SmartCabEnv(gym.Env):
         if self.current_cell in [GridSymbol.DOWN.value] + GridSymbol.valid_defaults():
             new_row = min(self.state["row"] + 1, self.max_row)
             next_cell = self.grid[new_row][self.state["col"]]
-            print(self.last_loc)
-            print((new_row, self.state["col"]))
             if (
                 next_cell == GridSymbol.BLOCK.value
                 or self.last_loc == (new_row, self.state["col"])
