@@ -29,7 +29,7 @@ class SmartCabModel(Model):
         self.env = SmartCabEnv(env_config)
 
         rl_agent = PPOAgent("SmartCab", SmartCabEnv, env_config, best_config)
-        # rl_agent.load("./checkpoints/checkpoint-76")
+        # rl_agent.load("./checkpoints/checkpoint-134")
 
         self.schedule = SmartCabActivation(self, rl_agent=rl_agent)
         self._init_environment(self.env)

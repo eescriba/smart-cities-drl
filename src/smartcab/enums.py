@@ -16,7 +16,6 @@ class SmartCabReward(Enum):
     ACTION_OK = 30
     ACTION_ERROR = -10
     MOVE_ERROR = -3
-    RECHARGE = -5
     GOOD_RECHARGE = 10
     NO_ENERGY = -50
 

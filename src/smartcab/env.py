@@ -259,13 +259,9 @@ class SmartCabEnv(gym.Env):
     def recharge(self):
         new_state, reward, done = self.default_state()
         if self.can_recharge():
-            reward = (
-                SmartCabReward.GOOD_RECHARGE.value
-                if self.energy_remaining <= self.max_energy * 0.2
-                else SmartCabReward.RECHARGE.value
-            )
+            if self.energy_remaining <= 15:
+                reward = SmartCabReward.ACTION_OK.value
             new_state["energy"] = self.max_energy
-
         else:
             reward = SmartCabReward.ACTION_ERROR.value
         return new_state, reward, done
@@ -281,7 +277,7 @@ class SmartCabEnv(gym.Env):
         )
 
     def can_recharge(self):
-        return self.state["pass_idx"] < self.aboard_idx and self.around_vehicle(
+        return self.around_vehicle(
             [
                 target
                 for i, target in enumerate(self.targets)
