@@ -39,8 +39,8 @@ MAP_DATA = """
 △ # X # ▽ △ # ▽
 △ ◁ ◁ ◁ o o ◁ o
 o ▷ ▷ ▷ o o ▷ ▽
-△ + + # ▽ △ X ▽
-△ + + X ▽ △ # ▽
+△ X # # ▽ △ X ▽
+△ # # X ▽ △ # ▽
 △ ◁ ◁ ◁ ◁ o ◁ ◁"""
 
 
@@ -58,8 +58,8 @@ class SmartCabEnv(gym.Env):
                 coords = (i, j)
                 if cell == "X":
                     self.targets.append(coords)
-                elif cell == "+":
-                    self.recharge_locs.append(coords)
+                # elif cell == "+":
+                #     self.recharge_locs.append(coords)
 
         self.actions = {
             0: self.move_south,
@@ -281,7 +281,13 @@ class SmartCabEnv(gym.Env):
         )
 
     def can_recharge(self):
-        return self.around_vehicle(self.recharge_locs)
+        return self.state["pass_idx"] < self.aboard_idx and self.around_vehicle(
+            [
+                target
+                for i, target in enumerate(self.targets)
+                if i not in [self.state["pass_idx"], self.state["dest_idx"]]
+            ]
+        )
 
     def around_vehicle(self, locations):
         return any(
