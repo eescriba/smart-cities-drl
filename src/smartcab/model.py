@@ -1,12 +1,5 @@
-import random
-from collections import namedtuple
-from itertools import repeat
-
 from mesa import Model
 from mesa.datacollection import DataCollector
-
-import ray
-
 from core.rl import PPOAgent
 
 from .agents import GridAgent, PassengerAgent, TargetAgent, VehicleAgent
@@ -17,19 +10,17 @@ from .space import SmartCabMultiGrid
 
 
 class SmartCabModel(Model):
-    def __init__(self, show_symbols, width=8, height=8, nb_passengers=6, max_energy=50):
+    def __init__(self, show_symbols, width=8, height=8):
 
         super().__init__()
 
         self.grid = SmartCabMultiGrid(width, height, True)
         self.show_symbols = show_symbols
 
-        env_config = {"max_energy": max_energy}
-
+        env_config = {}
         self.env = SmartCabEnv(env_config)
-
         rl_agent = PPOAgent("SmartCab", SmartCabEnv, env_config, best_config)
-        # rl_agent.load("./checkpoints/checkpoint-134")
+        # rl_agent.load("./checkpoints/checkpoint-best")
 
         self.schedule = SmartCabActivation(self, rl_agent=rl_agent)
         self._init_environment(self.env)

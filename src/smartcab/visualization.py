@@ -11,7 +11,7 @@ SYMBOLS_MAP = {
     "▷": "white",
     "◁": "white",
     "X": "white",
-    # "+": "#9CCC65",
+    "+": "#f1f3f4",
 }
 
 TARGET_COLORS = ["#EF5350", "#AB47BC", "#42A5F5", "#FFA726", "#9CCC65"]
@@ -22,7 +22,6 @@ def agent_portrayal(agent):
 
     if hasattr(agent, "portrayal"):
         portrayal = agent.portrayal
-
     elif isinstance(agent, PassengerAgent):
         portrayal = {
             "Filled": "true",
@@ -31,7 +30,6 @@ def agent_portrayal(agent):
             "Layer": 4,
             "Color": TARGET_COLORS[agent.target_id % len(TARGET_COLORS)],
         }
-
     elif isinstance(agent, VehicleAgent):
         portrayal = {
             "Shape": "resources/taxi-" + agent.heading + ".png",
@@ -39,7 +37,6 @@ def agent_portrayal(agent):
             "w": 0.75,
             "Layer": 3,
         }
-
     elif isinstance(agent, TargetAgent):
         portrayal = {
             "Filled": "true",
@@ -49,7 +46,6 @@ def agent_portrayal(agent):
             "Layer": 2,
             "Color": TARGET_COLORS[agent.target_id % len(TARGET_COLORS)],
         }
-
     elif isinstance(agent, GridAgent):
         portrayal = {
             "Filled": "true",
@@ -79,6 +75,5 @@ class ResultsElement(TextElement):
                 <h3>Current episode</h3> \
                 <span>Steps: {env.num_steps}</span><br> \
                 <span>Reward: {reward}({last_reward:+})</span><br> \
-                <span>Energy: {env.energy_remaining}</span><br> \
             </div> \
             </div>"

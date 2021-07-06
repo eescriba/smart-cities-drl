@@ -2,22 +2,11 @@ import numpy as np
 from enum import Enum
 
 
-class SmartCabAction(Enum):
-    SOUTH = 0
-    NORTH = 1
-    EAST = 2
-    WEST = 3
-    PICKUP = 4
-    DROPOFF = 5
-
-
 class SmartCabReward(Enum):
     DEFAULT = -1
-    ACTION_OK = 30
+    ACTION_OK = 20
     ACTION_ERROR = -10
     MOVE_ERROR = -3
-    GOOD_RECHARGE = 10
-    NO_ENERGY = -50
 
 
 class GridSymbol(Enum):

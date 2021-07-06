@@ -1,15 +1,10 @@
 """ RL """
-from abc import ABC, ABC
+from abc import ABC
 
 import ray
-from ray.rllib.agents.dqn import DQNTrainer
 from ray.rllib.agents.ppo import PPOTrainer, DEFAULT_CONFIG
-from ray.tune import run, sample_from
-from ray.tune.logger import pretty_print
-from ray.tune.registry import register_env
-from ray.tune.schedulers import PopulationBasedTraining
+from ray.tune import run
 import tensorflow as tf
-
 
 RAY_DIR = "ray_results/"
 
@@ -62,13 +57,13 @@ class RLlibAgent(ABC):
         Train a RLlib agent for specified number of iterations
         """
         results = []
-        for n in range(num_iter):
+        for i in range(num_iter):
             result = self.agent.train()
             results.append(result)
             file_name = self.agent.save()
             if verbose:
                 print(
-                    f'{n+1:3d}: Min/Mean/Max reward: {result["episode_reward_min"]:8.4f}/{result["episode_reward_mean"]:8.4f}/{result["episode_reward_max"]:8.4f}.\
+                    f'{i+1:3d}: Min/Mean/Max reward: {result["episode_reward_min"]:8.4f}/{result["episode_reward_mean"]:8.4f}/{result["episode_reward_max"]:8.4f}.\
                     Checkpoint saved to {file_name}'
                 )
         return results
@@ -81,16 +76,14 @@ class RLlibAgent(ABC):
         mean_reward = 0
         max_reward = 0
         min_reward = 0
-        for n in range(num_episodes):
+        for _ in range(num_episodes):
             obs = env.reset()
             done = False
             episode_reward = 0
             while not done:
                 action = self.agent.compute_action(obs)
-                obs, reward, done, info = env.step(action)
+                obs, reward, done, _ = env.step(action)
                 episode_reward += reward
-            if verbose:
-                print("Episode reward: ", episode_reward)
             mean_reward += episode_reward
             max_reward = max(max_reward, episode_reward)
             min_reward = min(min_reward, episode_reward)
@@ -105,7 +98,3 @@ class RLlibAgent(ABC):
 
 class PPOAgent(RLlibAgent):
     agent_class = PPOTrainer
-
-
-class DQNAgent(RLlibAgent):
-    agent_class = DQNTrainer

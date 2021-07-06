@@ -25,13 +25,17 @@ pip install -r requirements.txt
 
 Train environments in Jupyter notebooks with RLlib.
 
-* Local: `/notebooks/wastenet.ipynb`
-* Colab: [![WasteNet](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/eescriba/smart-cities-drl/blob/master/notebooks/wastenet.ipynb)
+### WasteNet
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/eescriba/smart-cities-drl/blob/master/notebooks/wastenet.ipynb)
+
+### SmartCab
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/eescriba/smart-cities-drl/blob/master/notebooks/smartcab.ipynb)
+
 
 
 ## Simulations
 
 Run and visualize environments with Mesa.
 ```
-mesa runserver src/wastenet
+mesa runserver src/[env_name]
 ```

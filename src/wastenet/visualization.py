@@ -20,14 +20,8 @@ def network_portrayal(G):
 
     def edge_color(agent1, agent2):
         if agent2.prev == agent1.unique_id or agent2.prev == agent1.unique_id:
-            # if agent1.checkpoint and agent2.checkpoint:
             return "#000000"
         return "#e8e8e8"
-
-    # def edge_width(agent1, agent2):
-    #     if agent1.checkpoint and agent2.checkpoint:
-    #         return 3
-    #     return 2
 
     def get_agents(source, target):
         return G.nodes[source]["agent"][0], G.nodes[target]["agent"][0]
@@ -61,13 +55,6 @@ def network_portrayal(G):
 
     return portrayal
 
-
-level_series = [
-    {"Label": "Empty", "Color": "#008000"},
-    {"Label": "Medium", "Color": "yellow"},
-    {"Label": "Full", "Color": "orange"},
-    {"Label": "Overflow", "Color": "red"},
-]
 
 level_fields = [
     {"Label": "", "Color": "transparent"},

@@ -1,7 +1,3 @@
-from ray.rllib.agents.ppo import DEFAULT_CONFIG
-
-default_config = DEFAULT_CONFIG.copy()
-
 best_config = {
     "observation_filter": "MeanStdFilter",
     "model": {"free_log_std": True},

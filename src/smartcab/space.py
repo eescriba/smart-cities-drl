@@ -2,7 +2,7 @@ from mesa.space import MultiGrid
 
 
 class SmartCabMultiGrid(MultiGrid):
-    """ MultiGrid with transformed coordinates"""
+    """MultiGrid with transformed coordinates"""
 
     def move_agent(self, agent, pos):
         return super().move_agent(agent, self.transform_grid_coords(pos))

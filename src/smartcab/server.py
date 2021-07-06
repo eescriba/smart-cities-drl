@@ -5,9 +5,6 @@ from mesa.visualization.UserParam import UserSettableParameter
 from .model import SmartCabModel
 from .visualization import agent_portrayal, ResultsElement
 
-# from .rl_agents import dqn
-
-
 CANVAS_HEIGHT = 500
 CANVAS_WIDTH = 500
 grid_h, grid_w = 8, 8
