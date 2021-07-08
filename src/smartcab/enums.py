@@ -1,10 +1,9 @@
-import numpy as np
 from enum import Enum
 
 
 class SmartCabReward(Enum):
     DEFAULT = -1
-    ACTION_OK = 20
+    ACTION_OK = 30
     ACTION_ERROR = -10
     MOVE_ERROR = -3
 
