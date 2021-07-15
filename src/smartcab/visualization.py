@@ -14,7 +14,7 @@ SYMBOLS_MAP = {
     "+": "#f1f3f4",
 }
 
-TARGET_COLORS = ["#EF5350", "#AB47BC", "#42A5F5", "#FFA726", "#9CCC65"]
+TARGET_COLORS = ["#EF5350", "#AB47BC", "#42A5F5", "#9CCC65"]
 
 
 def agent_portrayal(agent):
