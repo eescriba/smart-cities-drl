@@ -68,10 +68,9 @@ class WasteNetEnv(gym.Env):
                 ),
             ]
         )
-        self.seed()
         self.s = self.reset()
 
-        # Stats
+    def reset(self):
         self.total_reward = 0
         self.total_dist = 0
         self.total_collected = 0
@@ -80,12 +79,6 @@ class WasteNetEnv(gym.Env):
         self.mean_dist = 0
         self.mean_collected = 0
         self.mean_overflow = 0
-
-    def seed(self, seed=None):
-        self.np_random, seed = seeding.np_random(seed)
-        return [seed]
-
-    def reset(self):
         self.current_node = self.start_node
         self.current_day = 0
         self.current_path = [self.start_node]

@@ -17,8 +17,9 @@ Clone repository and install dependencies.
 git clone git@github.com:eescriba/smart-cities-drl.git
 cd smart-cities-drl
 python3 -m venv venv
-source env/bin/activate
+source venv/bin/activate
 pip install -r requirements.txt
+pip install -e .
 ```
 
 ## Training

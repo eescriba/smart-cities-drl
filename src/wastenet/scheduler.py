@@ -10,13 +10,15 @@ class WasteNetActivation(RLlibActivation):
     Scheduler for WasteNet env.
     """
 
+    PARTIAL_TH = 40
+
     def __init__(self, model, mode, rl_agent=None) -> None:
         super().__init__(model, rl_agent)
         self.mode = mode
         self.last_checkpoint = 0
         self.mode_actions = {
             WasteNetMode.COMPLETE.name: lambda: WasteNetAction.PICKUP,
-            WasteNetMode.OVERHALF.name: self._next_action_oh,
+            WasteNetMode.PARTIAL.name: self._next_action_th,
             WasteNetMode.RANDOM.name: self._next_action_rnd,
         }
 
@@ -50,13 +52,13 @@ class WasteNetActivation(RLlibActivation):
     def _next_action_rnd(self):
         return random.choice(list(WasteNetAction))
 
-    def _next_action_oh(self):
+    def _next_action_th(self):
         node = self.model.env.current_node
         if node >= self.model.env.nb_dumpsters:
             return WasteNetAction.AVOID
         return (
             WasteNetAction.PICKUP
-            if self.model.env.fill_levels[self.model.env.current_node] > 40
+            if self.model.env.fill_levels[self.model.env.current_node] > self.PARTIAL_TH
             else WasteNetAction.AVOID
         )
 

@@ -69,6 +69,7 @@ class ResultsElement(TextElement):
         last_reward = model.schedule.last_reward
         return f"<div > \
             <div style='float: left; width: 50%;'> \
+                <h3>Episodes left: {model.remaining_episodes} </h3> \
                 <h3>Current run</h3> \
                 <span>Day: {env.current_day}</span><br> \
                 <span>Node: {env.current_node}</span><br> \
@@ -76,9 +77,9 @@ class ResultsElement(TextElement):
             </div> \
             <div style='float: left; width: 50%; margin-bottom: 20px;'> \
                 <h3>Avg per route</h3> \
-                <span>Distance: {env.mean_dist:.2f}</span><br> \
-                <span>Collected: {env.mean_collected:.2f}</span><br> \
-                <span>Overflows: {env.mean_overflow:.2f}</span><br> \
-                <span>Reward: {env.mean_reward:.2f}</span> \
+                <span>Distance: {model.mean_dist:.2f}</span><br> \
+                <span>Collected: {model.mean_collected:.2f}</span><br> \
+                <span>Overflows: {model.mean_overflow:.2f}</span><br> \
+                <span>Reward: {model.mean_reward:.2f}</span> \
             </div> \
             </div>"

@@ -14,7 +14,6 @@ class SmartCabActivation(RLlibActivation):
         """
         action = self.next_action()
         done = self.forward(action)
-        print("Action:", action)
 
         vehicle_loc = self.model.env.vehicle_loc
         targets = self.model.env.targets

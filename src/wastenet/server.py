@@ -25,7 +25,7 @@ model_params = {
         "Number of Episodes",
         value=1,
         min_value=1,
-        max_value=2000,
+        max_value=1000,
         step=1,
     ),
 }

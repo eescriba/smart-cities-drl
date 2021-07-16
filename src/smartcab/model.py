@@ -10,7 +10,7 @@ from .space import SmartCabMultiGrid
 
 
 class SmartCabModel(Model):
-    def __init__(self, show_symbols, width=8, height=8):
+    def __init__(self, show_symbols, nb_episodes=1, width=8, height=8):
 
         super().__init__()
 
@@ -20,7 +20,7 @@ class SmartCabModel(Model):
         env_config = {}
         self.env = SmartCabEnv(env_config)
         rl_agent = PPOAgent("SmartCab", SmartCabEnv, env_config, best_config)
-        # rl_agent.load("./checkpoints/checkpoint-best")
+        rl_agent.load("./checkpoints/checkpoint-best")
 
         self.schedule = SmartCabActivation(self, rl_agent=rl_agent)
         self._init_environment(self.env)
@@ -28,9 +28,9 @@ class SmartCabModel(Model):
         self.datacollector = DataCollector(
             model_reporters={"Reward": lambda m: m.schedule.reward},
         )
+        self.remaining_episodes = nb_episodes
 
     def _init_environment(self, env):
-        # map
         for i, row in enumerate(env.grid):
             for j, cell in enumerate(row):
                 if cell != "X":
@@ -54,5 +54,9 @@ class SmartCabModel(Model):
     def step(self):
         done = self.schedule.step()
         if done:
+            self.env.reset()
+            self.remaining_episodes -= 1
+        if self.remaining_episodes == 0:
             self.running = False
+
         self.datacollector.collect(self)

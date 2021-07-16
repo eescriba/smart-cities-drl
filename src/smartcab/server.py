@@ -23,6 +23,14 @@ model_params = {
         "Show Directions",
         value=True,
     ),
+    "nb_episodes": UserSettableParameter(
+        "slider",
+        "Number of Episodes",
+        value=1,
+        min_value=1,
+        max_value=1000,
+        step=1,
+    ),
 }
 
 server = ModularServer(

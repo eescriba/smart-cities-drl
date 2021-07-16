@@ -8,13 +8,13 @@ from .enums import SmartCabReward, GridSymbol
 
 
 MAP_DATA = """
-▷ ▷ ▷ ▷ o ▷ ▷ ▽
-△ X # # ▽ △ X ▽
-△ # # X ▽ △ # ▽
-△ ◁ ◁ ◁ o o ◁ o
-o ▷ ▷ ▷ o o ▷ o
-△ + # # ▽ X # ▽
-△ # # # ▽ # # ▽
+▷ ▷ ▷ ▷ ▽ # # #
+△ X # # ▽ # # #
+△ # # X ▽ # X #
+△ ◁ ◁ ◁ o ▷ ▷ ▽
+o ▷ ▷ ▷ ▽ # # ▽
+△ + # # ▽ # # ▽
+△ # # # ▽ X # ▽
 △ ◁ ◁ ◁ ◁ ◁ ◁ ◁"""
 
 

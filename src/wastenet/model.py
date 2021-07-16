@@ -58,7 +58,12 @@ class WasteNet(Model):
             self.schedule.add(a)
             self.grid.place_agent(a, node)
 
+        self.nb_episodes = nb_episodes
         self.remaining_episodes = nb_episodes
+        self.mean_reward = 0
+        self.mean_dist = 0
+        self.mean_overflow = 0
+        self.mean_collected = 0
         self.running = True
         self.datacollector.collect(self)
 
@@ -66,10 +71,29 @@ class WasteNet(Model):
         done = self.schedule.step()
         self.datacollector.collect(self)
         if done:
+            self._update_mean_stats()
             self.env.reset()
             self.remaining_episodes -= 1
         if self.remaining_episodes == 0:
             self.running = False
+
+    def _update_mean_stats(self):
+        current_episode = self.nb_episodes - self.remaining_episodes
+        self.mean_reward = self._agg_episode(
+            current_episode, self.mean_reward, self.env.mean_reward
+        )
+        self.mean_dist = self._agg_episode(
+            current_episode, self.mean_dist, self.env.mean_dist
+        )
+        self.mean_collected = self._agg_episode(
+            current_episode, self.mean_collected, self.env.mean_collected
+        )
+        self.mean_overflow = self._agg_episode(
+            current_episode, self.mean_overflow, self.env.mean_overflow
+        )
+
+    def _agg_episode(self, current_episode, total_mean, mean):
+        return (total_mean * current_episode + mean) / (current_episode + 1)
 
 
 def nb_empty(model):
