@@ -68,7 +68,7 @@ class RLlibAgent(ABC):
                 )
         return results
 
-    def test(self, num_episodes, verbose=True):
+    def test(self, num_episodes, max_steps=500, verbose=True):
         """
         Test trained agent for specified number of episodes
         """
@@ -80,10 +80,12 @@ class RLlibAgent(ABC):
             obs = env.reset()
             done = False
             episode_reward = 0
-            while not done:
+            num_steps = 0
+            while not done and num_steps < max_steps:
                 action = self.agent.compute_action(obs)
                 obs, reward, done, _ = env.step(action)
                 episode_reward += reward
+                num_steps += 1
             mean_reward += episode_reward
             max_reward = max(max_reward, episode_reward)
             min_reward = min(min_reward, episode_reward)
