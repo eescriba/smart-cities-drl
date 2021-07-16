@@ -1,6 +1,5 @@
 # Deep Reinforcement Learning for Smart Cities
 
-![smart-cities-drl](assets/wastenet-routes.png)
 
 ## Documentation
 
@@ -26,13 +25,15 @@ pip install -e .
 
 Train environments in Jupyter notebooks with RLlib.
 
+### SmartCab
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/eescriba/smart-cities-drl/blob/master/notebooks/smartcab.ipynb)
 ### WasteNet
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/eescriba/smart-cities-drl/blob/master/notebooks/wastenet.ipynb)
 
-### SmartCab
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/eescriba/smart-cities-drl/blob/master/notebooks/smartcab.ipynb)
 
 
+
+![smart-cities-drl](assets/wastenet-rl.png)
 
 ## Simulations
 
@@ -40,3 +41,5 @@ Run and visualize environments with Mesa.
 ```
 mesa runserver src/[env_name]
 ```
+
+![smart-cities-drl](assets/wastenet-routes.png)
